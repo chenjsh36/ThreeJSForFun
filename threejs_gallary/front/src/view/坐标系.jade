@@ -1,0 +1,151 @@
+extends threejslayout
+
+block content
+
+    script.
+        var scene,
+            camera,
+            renderer,
+            stats,
+            gui
+            ;
+        var geometry,
+            material,
+            cube,
+            line;
+        
+        var ambientLight;
+
+        init();
+        buildGui();
+        animate();
+
+        function init() {
+            var size = 500,
+                step = 50,
+                geometry,
+                i, j
+                ;
+            
+            //- Stats 
+            stats = new Stats();
+            document.body.appendChild(stats.dom);
+
+            //- 创建场景
+            scene = new THREE.Scene();
+        
+            //- 创建相机
+            camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
+            camera.position.z = 500;
+            camera.position.y = 500;
+            camera.position.x = 100;
+            camera.lookAt(scene.position);
+
+            //- 渲染
+            renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor( 0xf0f0f0 );
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+
+
+            geometry = new THREE.Geometry();
+            for (i = -size; i <= size; i += step) {
+                if (i == 0) {
+                    geometry.vertices.push(new THREE.Vector3(-size - step, 0, i));
+                    geometry.vertices.push(new THREE.Vector3(size + step, 0, i));
+                    geometry.vertices.push(new THREE.Vector3(i, 0, -size - step));
+                    geometry.vertices.push(new THREE.Vector3(i, 0, size + step));
+                } else {
+                    geometry.vertices.push(new THREE.Vector3(-size, 0, i));
+                    geometry.vertices.push(new THREE.Vector3(size, 0, i));
+                    geometry.vertices.push(new THREE.Vector3(i, 0, -size));
+                    geometry.vertices.push(new THREE.Vector3(i, 0, size));                
+                }
+
+            }
+            material = new THREE.LineBasicMaterial({color: 0x000000, opacity: .9, linewidth: 2});
+            line = new THREE.LineSegments(geometry, material);
+            scene.add(line);
+
+            //- 立方体
+            geometry = new THREE.BoxGeometry( 100, 100, 100 );
+            material = new THREE.MeshLambertMaterial( { color: 0xff7700} );
+            cube = new THREE.Mesh( geometry, material );
+            scene.add( cube );
+
+            //- 环境灯
+            ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+
+            //- 点灯
+            var light = new THREE.PointLight(0xFFFF00);
+            light.position.set(500, 500, 500);
+            scene.add(light);
+
+            //- 绑定窗口大小，自适应
+            var threeexResize = new THREEex.WindowResize(renderer, camera);
+
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            camera.lookAt(scene.position);
+            stats.begin();
+            render();
+            stats.end();
+        }
+
+        //- 循环体-渲染
+        function render() {
+            renderer.render( scene, camera );
+        }
+        
+        //- 调试框============================================================================
+        function clearGui() {
+            if (gui) gui.destroy();
+            gui = new dat.GUI();
+            gui.open();
+        }
+        function buildGui() {
+            clearGui();
+            addGui('cube pos x', cube.position.x, function(val) {
+                cube.position.x = val;
+            }, false, -500, 500);
+            addGui('cube pos y', cube.position.y, function(val) {
+                cube.position.y = val;
+            }, false, -100, 100);
+            addGui('cube pos z', cube.position.z, function(val) {
+                cube.position.z = val;
+            }, false, -500, 500);
+            addGui('camera pos x', camera.position.x, function(val) {
+                camera.position.x = val;
+            }, false, -500, 500);
+            addGui('camera pos y', camera.position.y, function(val) {
+                camera.position.y = val;
+            }, false, -100, 100);
+            addGui('camera pos z', camera.position.z, function(val) {
+                camera.position.z = val;
+            }, false, -500, 500);
+        }
+
+        function addGui( name, value, callback, isColor, min, max ) {
+            var node;
+            var param = { color: '0xffffff' };
+            param[ name ] = value;
+            if ( isColor ) {
+                node = gui.addColor( param, name ).onChange( function() {
+                    callback( param[ name ] );
+                } );
+            } else if ( typeof value == 'object' ) {
+                node = gui.add( param, name, value ).onChange( function() {
+                    callback( param[ name ] );
+                } );
+            } else {
+                node = gui.add( param, name, min, max ).onChange( function() {
+                    callback( param[ name ] );
+                } );
+            }
+            return node;
+        }
+        //- 调试框============================================================================
