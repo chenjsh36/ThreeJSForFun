@@ -1,10 +1,7 @@
 extends threejslayout
 
 block content
-    style.
-        body {
-            overflow: hidden;
-        }
+
     script.
         var scene,
             camera,
@@ -39,6 +36,10 @@ block content
             var light = new THREE.PointLight(0xFFFF00);
             light.position.set(20, 20, 30);
             scene.add(light);
+
+            //- 绑定窗口大小，自适应
+            var threeexResize = new THREEex.WindowResize(renderer, camera);
+
         }
 
         //- 循环体-渲染
