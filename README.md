@@ -1,4 +1,5 @@
-# threejsforfun
+ThreeJS For Fun
+====================
 > 收集 ThreeJS 相关的系列教程、Demo、工具；整理学习笔记和Demo；欢迎补充和相互交流！
 
 ## ThreeJS 官网
@@ -41,3 +42,7 @@
 * [voxelpainter](https://threejs.org/examples/webgl_interactive_voxelpainter.html)
 * [tunnel-effect](http://learningthreejs.com/blog/2012/01/11/tunnel-effect/)
 * [Altered earth](http://alteredqualia.com/xg/examples/earth_bathymetry.html)
+
+License
+---------------------
+MIT: http://mit-license.org/

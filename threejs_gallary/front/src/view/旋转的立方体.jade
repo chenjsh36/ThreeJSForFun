@@ -1,0 +1,51 @@
+extends threejslayout
+
+block content
+    style.
+        body {
+            overflow: hidden;
+        }
+    script.
+        var scene,
+            camera,
+            renderer;
+        var geometry,
+            material,
+            cube;
+
+        init();
+        render();
+
+        function init() {
+            //- 创建场景
+            scene = new THREE.Scene();
+        
+            //- 创建相机
+            camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+            camera.position.z = 60;
+
+            //- 渲染
+            renderer = new THREE.WebGLRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+
+            //- 立方体
+            geometry = new THREE.BoxGeometry( 10, 10, 10 );
+            material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+            cube = new THREE.Mesh( geometry, material );
+            scene.add( cube );
+
+            //- 点灯
+            var light = new THREE.PointLight(0xFFFF00);
+            light.position.set(20, 20, 30);
+            scene.add(light);
+        }
+
+        //- 循环体-渲染
+        function render() {
+            requestAnimationFrame( render );
+
+            cube.rotation.x += 0.05;
+            cube.rotation.y += 0.05;
+            renderer.render( scene, camera );
+        }
