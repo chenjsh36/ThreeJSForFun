@@ -34,6 +34,10 @@ var path = {
         src: [root.src + '/lib/**/*'],
         dist: root.dist + '/static/lib'
     },
+    module: {
+        src: [root.src + '/module/**/*'],
+        dist: root.dist + '/static/module'
+    },
     img: {
         src: [root.src + '/img/**/*'],
         dist: root.dist + '/static/img'
@@ -52,6 +56,12 @@ var module_path = {
 gulp.task('lib', function() {
     gulp.src(path.lib.src)
         .pipe(gulp.dest(path.lib.dist))
+        ;
+})
+
+gulp.task('module', function() {
+    gulp.src(path.module.src)
+        .pipe(gulp.dest(path.module.dist))
         ;
 })
 
@@ -142,10 +152,10 @@ gulp.task('watch', function(err){
 
 gulp.task('default', ['clean'], function(){
   // return gulp.start('view', 'browserify_module', 'browserify_coffee', 'less', 'watch');
-  runsequence('lib', 'browserify_script', 'less', 'view', 'browsersync', 'img', 'watch');
+  runsequence('lib', 'module', 'browserify_script', 'less', 'view', 'browsersync', 'img', 'watch');
 });
 
 gulp.task('build', ['clean'], function(){
   // return gulp.start('view', 'browserify_module', 'browserify_coffee', 'less', 'watch');
-  runsequence('lib', 'browserify_script', 'less', 'view', 'img');
+  runsequence('lib', 'module', 'browserify_script', 'less', 'view', 'img');
 });

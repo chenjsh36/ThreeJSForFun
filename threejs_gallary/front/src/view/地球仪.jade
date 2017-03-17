@@ -2,6 +2,7 @@ extends threejslayout
 
 block content
     script(src="/threejs/static/lib/threejs/OrbitControls.js")
+    script(src="/threejs/static/lib/threejs/SkyShader.js")
     script.
         var scene,
             camera,
@@ -11,6 +12,7 @@ block content
             ;
         var geometry,
             material,
+            sky,
             cube,
             line;
         
@@ -36,14 +38,14 @@ block content
         
             //- 创建相机
             camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
-            camera.position.z = 500;
-            camera.position.y = 500;
-            camera.position.x = 100;
+            camera.position.z = 1.2;
+            camera.position.y = 0;
+            camera.position.x = 0;
             camera.lookAt(scene.position);
 
             //- 渲染
             renderer = new THREE.WebGLRenderer();
-            renderer.setClearColor( 0xf0f0f0 );
+            renderer.setClearColor( 0x000000 );
             renderer.setPixelRatio( window.devicePixelRatio );
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
@@ -54,18 +56,48 @@ block content
             scene.add(line);
 
             //- 立方体
-            geometry = new THREE.BoxGeometry( 100, 100, 100 );
-            material = new THREE.MeshLambertMaterial( { color: 0xff7700} );
-            cube = new THREE.Mesh( geometry, material );
-            scene.add( cube );
+            //- geometry = new THREE.BoxGeometry( 1, 1, 1 );
+            //- material = new THREE.MeshLambertMaterial( { color: 0xff7700} );
+            //- cube = new THREE.Mesh( geometry, material );
+            //- scene.add( cube );
+
+            //- 地球仪
+            console.log('threeex planets:', THREEex);
+            var earthMesh = THREEex.Planets.createEarth();
+            scene.add(earthMesh);
+    
+            //- 天空
+            sky = new THREE.Sky();
+            scene.add(sky.mesh);
+            var effectController  = {
+                turbidity: 10,
+                rayleigh: 2,
+                mieCoefficient: 0.005,
+                mieDirectionalG: 0.8,
+                luminance: 1,
+                inclination: 0.49, // elevation / inclination
+                azimuth: 0.25, // Facing front,
+                sun: ! true
+            };
+            sky.uniforms.turbidity.value = 10;
+            sky.uniforms.rayleigh.value = 10;
+            sky.uniforms.mieCoefficient.value = 10;
+            sky.uniforms.mieDirectionalG.value = 10;
+            sky.uniforms.luminance.value = 10;
+            //- sky.uniforms.inclination.value = 10;
+            //- sky.uniforms.azimuth.value = 10;
+            //- sky.uniforms.sun.value = 10;
+            console.log('sky:', sky.uniforms.sunPosition.value);
+            sky.uniforms.sunPosition.value = {x: -5, y: 0, z: 0};
+            //- sky.uniforms.sunPosition.value.copy(earthMesh.position);
 
             //- 环境灯
-            ambientLight = new THREE.AmbientLight(0x404040);
+            ambientLight = new THREE.AmbientLight(0xffffff);
             scene.add(ambientLight);
 
             //- 点灯
-            var light = new THREE.PointLight(0xFFFF00);
-            light.position.set(500, 500, 500);
+            var light = new THREE.PointLight(0xFFFFFF);
+            light.position.set(0, 0, -500);
             scene.add(light);
 
             //- 绑定窗口大小，自适应
@@ -73,9 +105,14 @@ block content
 
             //- threejs 的控制器
             var controls = new THREE.OrbitControls( camera, renderer.domElement );
-            controls.target = new THREE.Vector3(0,15,0);
+            controls.target = new THREE.Vector3(0,0,0);
             controls.maxPolarAngle = Math.PI / 2;
-            //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
+            controls.addEventListener( 'change', function() { 
+                renderer.render(scene, camera); 
+                light.position.x = -camera.position.x
+                light.position.y = -camera.position.y
+                light.position.z = -camera.position.z
+            }); // add this only if there is no animation loop (requestAnimationFrame)
         }
         
         function animate() {
@@ -99,15 +136,15 @@ block content
         }
         function buildGui() {
             clearGui();
-            addGui('cube pos x', cube.position.x, function(val) {
-                cube.position.x = val;
-            }, false, -500, 500);
-            addGui('cube pos y', cube.position.y, function(val) {
-                cube.position.y = val;
-            }, false, -100, 100);
-            addGui('cube pos z', cube.position.z, function(val) {
-                cube.position.z = val;
-            }, false, -500, 500);
+            //- addGui('cube pos x', cube.position.x, function(val) {
+            //-     cube.position.x = val;
+            //- }, false, -500, 500);
+            //- addGui('cube pos y', cube.position.y, function(val) {
+            //-     cube.position.y = val;
+            //- }, false, -100, 100);
+            //- addGui('cube pos z', cube.position.z, function(val) {
+            //-     cube.position.z = val;
+            //- }, false, -500, 500);
             addGui('camera pos x', camera.position.x, function(val) {
                 camera.position.x = val;
             }, false, -500, 500);
@@ -117,6 +154,22 @@ block content
             addGui('camera pos z', camera.position.z, function(val) {
                 camera.position.z = val;
             }, false, -500, 500);
+
+            addGui('turbidity', sky.uniforms.turbidity.value, function(val) {
+                sky.uniforms.turbidity.value = val;
+            }, false, 0.1, 20.0)
+            addGui('rayleigh', sky.uniforms.rayleigh.value, function(val) {
+                sky.uniforms.rayleigh.value = val;
+            }, false, 0.001, 4)
+            addGui('luminance', sky.uniforms.luminance.value, function(val) {
+                sky.uniforms.luminance.value = val;
+            }, false,  0.0, 2 )
+            addGui('mieCoefficient', sky.uniforms.mieCoefficient.value, function(val) {
+                sky.uniforms.mieCoefficient.value = val;
+            }, false, 0.001, 0.1)
+            addGui('mieDirectionalG', sky.uniforms.mieDirectionalG.value, function(val) {
+                sky.uniforms.mieDirectionalG.value = val;
+            }, false, 0.001, 1)
         }
 
         function addGui( name, value, callback, isColor, min, max ) {
