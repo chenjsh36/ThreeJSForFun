@@ -1,7 +1,7 @@
 extends threejslayout
 
 block content
-
+    script(src="/threejs/static/lib/threejs/OrbitControls.js")
     script.
         var scene,
             camera,
@@ -48,7 +48,7 @@ block content
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
 
-
+            //- 平面坐標系
             geometry = new THREE.Geometry();
             for (i = -size; i <= size; i += step) {
                 if (i == 0) {
@@ -86,6 +86,11 @@ block content
             //- 绑定窗口大小，自适应
             var threeexResize = new THREEex.WindowResize(renderer, camera);
 
+            //- threejs 的控制器
+            var controls = new THREE.OrbitControls( camera, renderer.domElement );
+            controls.target = new THREE.Vector3(0,15,0);
+            controls.maxPolarAngle = Math.PI / 2;
+            //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
         }
         
         function animate() {
