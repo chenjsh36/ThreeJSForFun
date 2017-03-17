@@ -1,7 +1,6 @@
 var WindowResize = require('./lib/threeex.windowresize.js');
-
-// var THREEex = THREEex || {};
-// THREEex.WindowResize = WindowResize;
+var CoSystem = require('./lib/threeex.cosystem.js');
+var Planets = require('./lib/threeex.planet.js');
 
 ;(function (root, factory) {
     if (typeof define === 'function' && define.amd) {
@@ -14,6 +13,7 @@ var WindowResize = require('./lib/threeex.windowresize.js');
 }(this, function(){
     var THREEex = THREEex || {};
     THREEex.WindowResize = WindowResize;
-
+    THREEex.CoSystem = CoSystem;
+    THREEex.Planets = Planets;
     return THREEex;
 }))
