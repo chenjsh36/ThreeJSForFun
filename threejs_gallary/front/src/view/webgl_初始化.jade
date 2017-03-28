@@ -27,7 +27,9 @@ block content
 
                 if (gl) {
                     // 设置清除颜色为黑色，不透明
-                    gl.clearColor(0.0, 0.0, 0.0, 1.0);    
+                    gl.clearColor(0.0, 0.0, 0.0, .5);
+                    // 清除所有东西
+                    gl.clearDepth(1.0);
                     // 开启“深度测试”, Z-缓存
                     gl.enable(gl.DEPTH_TEST); 
                     // 设置深度测试，近的物体遮挡远的物体
