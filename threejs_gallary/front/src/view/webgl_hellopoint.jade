@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+html(lang="en")
+head
+    meta(charset="UTF-8")
+    title Draw a point
+body(onload="main()")
+    p hello point
+    canvas#webgl(width="400" height="400") Please use the browser supporting "canvas"
+
+    script(src="/threejs/static/lib/webglutils/webgl-utils.js")
+    script(src="/threejs/static/lib/webglutils/webgl-debug.js")
+    script(src="/threejs/static/lib/webglutils/cuon-utils.js")
+    script.
+        var VSHADER_SOURCE = [
+            'void main() {\n',
+            ' gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n',
+            ' gl_PointSize = 10.0;\n',
+            '}\n'
+        ].join('');
+
+        var FSSHADER_SOURCE = [
+            'void main() {\n',
+            ' gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n',
+            '}\n'
+        ].join('');
+
+        function main() {
+            var canvas = document.getElementById('webgl');
+
+            var gl = getWebGLContext(canvas);
+
+            if (!gl) {
+                sonsole.log('Failed to get the rendering context for WebGL');
+                return;
+            }
+        
+            if (!initShaders(gl, VSHADER_SOURCE, FSSHADER_SOURCE)) {
+                console.log('Failed to initialize shaders.');
+                return;
+            }
+
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            gl.drawArrays(gl.POINTS, 0, 1);
+        }
