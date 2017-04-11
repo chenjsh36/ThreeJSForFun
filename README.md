@@ -10,6 +10,8 @@ ThreeJS For Fun
 * [Three.js 系列博客-很多样例](http://learningthreejs.com/blog/2015/05/27/learningthree-dot-js-news-stay-tuned-with-creative-3d-demos/)
 * [使用 D3 + webgl 制作地球仪](http://www.delimited.io/blog/2015/5/16/interactive-webgl-globes-with-threejs-and-d3)
 * [使用 header-tracker 和 webRTC](http://learningthreejs.com/blog/2013/03/12/move-a-cube-with-your-head/)
+* [Three.js 中文文档](http://techbrood.com/threejs/docs/)
+
 
 ## ThreeJS 相关的库
 * [tween lite](https://greensock.com/)
