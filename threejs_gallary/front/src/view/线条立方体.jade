@@ -1,0 +1,91 @@
+extends threejslayout
+
+block content
+    #container
+
+    script(src="/threejs/static/lib/threejs/OrbitControls.js")
+    script.
+        if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+        var container, stats;
+        var camera, scene, renderer;
+        var mesh;
+
+        init();
+        animate();
+
+        function init() {
+            container = document.getElementById('container');
+
+            //- 
+            camera = new THREE.PerspectiveCamera(27, window.innerWidth / window.innerHeight, 1, 4000);
+            camera.position.z = 2750;
+
+            scene = new THREE.Scene();
+
+            var segment = 10000;
+
+            var geometry = new THREE.BufferGeometry(); // 适合于静态物体
+            var material = new THREE.LineBasicMaterial({vertexColors: THREE.VertexColors});
+
+            var positions = new Float32Array(segment * 3);
+            var colors = new Float32Array(segment * 3);
+
+            var r = 800;
+
+            for (var i = 0; i < segment; i++) {
+                var x = Math.random() * r - r / 2;
+                var y = Math.random() * r - r / 2;
+                var z = Math.random() * r - r / 2;
+                
+                positions[i * 3] = x;
+                positions[i * 3 + 1] = y;
+                positions[i * 3 + 2] = z;
+
+                // color 
+                colors[i * 3] = (x / r) + .5;
+                colors[i * 3 + 1] = (y / r) + .5;
+                colors[i * 3 + 2] = (z / r) + .5;    
+            }
+
+            geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.addAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            geometry.computeBoundingSphere();
+
+            mesh = new THREE.Line(geometry, material);
+            scene.add(mesh);
+
+            //- 
+            renderer = new THREE.WebGLRenderer({antialias: false});
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            //- 
+            renderer.gammaInput = true;
+            renderer.gammaOutput = true; // ????
+
+            container.appendChild(renderer.domElement);
+
+            //- 
+            stats = new Stats();
+            container.appendChild(stats.dom);
+
+
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            render();
+            stats.update();
+        }
+
+        function render() {
+            var time = Date.now() * .001;
+
+            mesh.rotation.x = time * .25;
+            mesh.rotation.y = time * .5;
+
+            renderer.render(scene, camera);
+        }

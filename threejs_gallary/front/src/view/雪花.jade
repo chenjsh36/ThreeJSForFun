@@ -151,8 +151,8 @@ block content
         }
         function render() {
             var time = Date.now() * 0.001;
-            //mesh.rotation.x = time * 0.25;
+            //- mesh.rotation.x = time * 0.25;
             //mesh.rotation.y = time * 0.5;
-            //- parent_node.rotation.z = time * 0.5;
+            parent_node.rotation.z = time * 0.5;
             renderer.render( scene, camera );
         }
