@@ -55,6 +55,7 @@ var module_path = {
 
 gulp.task('lib', function() {
     gulp.src(path.lib.src)
+        .pipe(plumber())
         .pipe(gulp.dest(path.lib.dist))
         ;
 })
