@@ -1,0 +1,394 @@
+extends threejslayout
+
+block content
+    #container
+    #grid
+        button.btn#timeline-layout 时间轴
+        button.btn#helix-layout 旋转轴
+    style.
+        html, body {
+            height: 100%;
+        }
+        body {
+            background-color: #ccc;
+            margin: 0;
+            font-family: Helvetica, sans-serif;
+            overflow: hidden;
+        }
+        #container {
+            position: relative;
+        }
+        #grid {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            margin-left: transform(-50%, 0);
+        }
+
+        .element {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            padding: 20px 15px;
+            box-shadow: 0px 0px 12px rgba(0, 255, 255, .5);
+            border: 1px solid rgba(127, 255, 255, .25);
+            text-align: center;
+            cursor: default;
+        }
+
+        .element:hover {
+            box-shadow: 0px 0px 12px rgba(0, 255, 255, .75);
+            border: 1px solid rgba(127, 255, 255, .75);
+        }
+        
+        .element .title {
+            position: relative;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .element .content {
+            position: relative;
+            text-align: left;
+            font-size: 14px;
+        }
+        
+        .element .selects {
+            position: relative;
+            text-align: left;
+
+        }
+
+        .element .selects .select-label {
+            position: relative;
+            display: block;
+        }
+
+        .element .btn {
+            position: relative;
+            padding: 10px 15px;
+            background-color: gray;
+            border-radius: 4px;
+
+            text-align: center;
+
+        }
+
+    script(src="/threejs/static/lib/threejs/tween.js")
+    script(src="/threejs/static/lib/threejs/TrackballControls.js")
+    script(src="/threejs/static/lib/threejs/CSS3DRenderer.js")
+
+    script.
+        
+        var curPage = 0;
+        var subjects = [
+            {
+                problem: '屈原是我国春秋哪国人？',
+                selects: ['秦国', '魏国', '楚国', '赵国'],
+                answer: '楚国'
+            },
+            {
+                problem: '端午节有为小孩佩戴香囊的习惯，达人在香囊内放朱砂、雄黄、香药等代表的意义是什么？',
+                selects: ['吉祥', '一种装饰', '治病防身', '驱邪避瘟'],
+                answer: '驱邪避瘟'
+            },
+            {
+                problem: '南方的粽子一般是什么口味？',
+                selects: ['甜味', '咸味', '都不是'],
+                answer: '咸味'
+            },
+            {
+                problem: '古人端午节涂饮雄黄酒的意义是？',
+                selects: ['解毒', '纪念白蛇', '驱邪避瘟', '吉祥幸福'],
+                answer: '驱邪避瘟'
+            },
+            {
+                problem: '最早的粽子并不是端午节的特产，那粽子是什么时期被正式定为端午节食品的？',
+                selects: ['南北朝时期', '春秋时期', '晋代', '周商时期'],
+                answer: '南北朝时期'
+            },
+            {
+                problem: '赛龙舟是端午节的主要习俗之一，相传起源于古代楚国人因舍不得贤臣屈原投江死去，许多人划船追赶拯救。其实，“龙舟竞渡”早在（）时期就有了',
+                selects: ['南北朝时期', '商周时期', '战国时期', '春秋时期'],
+                answer: '春秋时期'
+            },
+            {
+                problem: '下列哪项不是端午节的习俗?',
+                selects: ['吃粽子', '赛龙舟', '登高采菊', '饮雄黄酒'],
+                answer: '登高采菊'
+            },
+            {
+                problem: '粽子最早叫什么？',
+                selects: ['米角', '米包', '角黍', '米黍'],
+                answer: '角黍'
+            },
+            {
+                problem: '端午节是哪一天？',
+                selects: ['农历六月初五', '阳历六月初五', '阳历五月初五', '农历五月初五'],
+                answer: '农历五月初五'
+            },
+            {
+                problem: '端午节在我国有不同的称呼，以下哪个不是端午节的称呼？',
+                selects: ['五月节', '菖蒲节', '六月节', '沐兰节'],
+                answer: '六月节'
+            }
+        ]
+        var pageLen = 4;
+        var camera, cameraZ, scene, renderer;
+        var controls;
+
+        var objects = [];
+        var targets = {timeline: [], helix: []};
+        var cameraTargets = {timeline: [], helix: []};
+        var layout = '';
+
+        var stats;
+
+        init();
+        animate();
+
+        function init() {
+            camera = new THREE.PerspectiveCamera(120, window.innerWidth / window.innerHeight, 1, 10000);
+            
+            camera.position.z = 1000;
+
+            scene = new THREE.Scene();
+
+            stats = new Stats();
+            document.getElementById('container').appendChild(stats.dom);
+            
+            for (var i = 0; i < pageLen; i++) {
+                //- 创建 Dom 元素页面
+                var element = createDomPage(i, window.innerWidth, window.innerHeight);
+
+                //- 创建 Dom 元素对应的 CSS3DObject 添加到场景中 
+                var object = new THREE.CSS3DObject(element);
+                object.position.x = Math.random() * 4000 - 2000;
+                object.position.y = Math.random() * 4000 - 2000;
+                object.position.z = Math.random() * 4000 - 2000;
+                scene.add(object);
+                objects.push(object);
+            }
+
+            //- timeline 布局 
+            var vector = new THREE.Vector3();
+            cameraZ = window.innerHeight / 2 / Math.sqrt(3) * 1.25;
+            for (var i = 0; i < objects.length; i++) {
+                var object = new THREE.Object3D();
+                object.position.x = 0;
+                object.position.y = 0;
+                object.position.z = - i * cameraZ * 2;
+                vector.x = object.position.x;
+                vector.y = object.position.y;
+                vector.z = object.position.z;
+                object.lookAt(vector);
+                targets.timeline.push(object);
+
+                var cObject = new THREE.Object3D();
+                cObject.position.x = 0;
+                cObject.position.y = 0;
+                cObject.position.z = -i * cameraZ * 2 + cameraZ;
+                cameraTargets.timeline.push(cObject);
+            }
+
+            //- helix 旋转轴布局
+            var vector = new THREE.Vector3();
+            var cylindrical = new THREE.Cylindrical();
+            for (var i = 0, l = objects.length; i < l; i++) {
+                var theta = (i % 8) * (Math.PI / 2);
+                var y = i * (window.innerHeight / 2);
+                var object = new THREE.Object3D();
+
+                cylindrical.set(window.innerWidth * 1 * Math.sqrt(2), theta, y);
+
+                object.position.setFromCylindrical(cylindrical);
+                vector.x = object.position.x * 2;
+                vector.y = object.position.y;
+                vector.z = object.position.z * 2;
+
+                object.lookAt(vector);
+                console.log(object.rotation);
+                targets.helix.push(object);
+                
+                var cObject = new THREE.Object3D();
+                cylindrical.set(window.innerWidth * 1 * Math.sqrt(2) + window.innerHeight / (2 * Math.sqrt(3)) , theta, y);
+                cObject.position.setFromCylindrical(cylindrical);
+                vector.x = cObject.position.x * 2;
+                vector.y = cObject.position.y;
+                vector.z = cObject.position.z * 2;
+
+                cObject.lookAt(vector);
+                cameraTargets.helix.push(cObject);
+
+            }
+
+            //- renderer
+            renderer = new THREE.CSS3DRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.domElement.style.position = 'absolute';
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            //- transformLayout(targets.helix, 2000);
+
+            window.addEventListener('resize', onWindowResize, false);
+        
+            //- document.addEventListener('click', function(event) {
+            //-     console.log('click doc:', event);
+            //-     nextPage();
+            //- })
+
+            //- 布局切换 事件
+            var button = document.getElementById('timeline-layout');
+            button.addEventListener('click', function(event) {
+                if (layout === 'timeline') return;
+                layout = 'timeline';
+                transformLayout(targets.timeline, 1000);
+            });
+
+            var button = document.getElementById('helix-layout');
+            button.addEventListener('click', function(event) {
+                if (layout === 'helix') return;
+                layout = 'helix';
+                transformLayout(targets.helix, 1000);
+            });
+
+        }
+
+        function transformLayout(targets, duration) {
+            TWEEN.removeAll();
+            for (var i = 0; i < objects.length; i++) {
+
+                var object = objects[i];
+                var target = targets[i];
+                var randomT = Math.random() * duration + duration;
+                new TWEEN.Tween(object.position)
+                    .to({x: target.position.x, 
+                        y: target.position.y,
+                        z: target.position.z},
+                        randomT)
+                    .easing(TWEEN.Easing.Exponential.InOut)
+                    .onUpdate((function(index) {
+                        return function() {
+                            if (index === 2) {
+                                console.log(objects[2].position.x, objects[2].position.y, objects[2].position.z);    
+                            }
+                            //- console.log('index is :', index);
+                        }
+                    }(i)))
+                    .start();
+
+                new TWEEN.Tween(object.rotation)
+                    .to({
+                        x: target.rotation.x,
+                        y: target.rotation.y,
+                        z: target.rotation.z
+                    }, randomT)
+                    .easing(TWEEN.Easing.Exponential.InOut)
+                    .start();
+            }
+
+            new TWEEN.Tween(this)
+                .to({}, duration * 2)
+                .onUpdate(render)
+                .start();
+        }
+
+
+        function nextPage() {
+            curPage = curPage === pageLen - 1 ? 0 : curPage + 1;
+            showPage(curPage);
+        }
+
+        function showPage(p) {
+            var target = cameraTargets[layout][p];
+            console.log('下一页是:', p, target.position);
+            new TWEEN.Tween(camera.position)
+                .to({
+                    x: target.position.x,
+                    y: target.position.y,
+                    z: target.position.z
+                }, 500)
+                .easing(TWEEN.Easing.Exponential.InOut)
+                .start();
+            new TWEEN.Tween(camera.rotation)
+                .to({
+                    x: target.rotation.x,
+                    y: target.rotation.y,
+                    z: target.rotation.z,
+                }, 500)
+                .easing(TWEEN.Easing.Exponential.InOut)
+                .start();
+
+            new TWEEN.Tween(this)
+                .to({}, 500 * 2)
+                .onUpdate(render)
+                .start();
+        }
+
+        function createDomPage(i, w, h) {
+            var element = document.createElement('div');
+            element.className = 'element';
+            element.style.backgroundColor = 'rgba(255, 255, 255,' + (Math.random() * .5 + .25) + ')';
+            element.style.width = w + 'px';
+            element.style.height = h + 'px';
+
+            var title = document.createElement('div');
+            title.className = 'title';
+            title.textContent = '端午节知识问答【第 ' + (i + 1) + '/' + pageLen + ' 题】';
+            element.appendChild(title);
+
+            var content = document.createElement('div');
+            content.className = 'content';
+            content.textContent = subjects[i].problem;
+            element.appendChild(content);
+
+            var selects = document.createElement('div');
+            selects.className = 'selects';
+            var selectsItem = subjects[i].selects;
+            selectsItem.forEach(function(item, index) {
+                console.log(item);
+                var label = document.createElement('label');
+                label.className = 'select-label';
+
+                var selectItem = document.createElement('input');
+                selectItem.className = 'selects-input';
+                selectItem.setAttribute('type', 'radio');
+                selectItem.setAttribute('name', 'problem-' + i);
+                selectItem.setAttribute('value', item);
+                label.appendChild(selectItem);
+                
+                var textNode = document.createTextNode(item);
+                label.appendChild(textNode);
+
+                selects.appendChild(label);
+            })
+            element.appendChild(selects);
+
+            var btn = document.createElement('div');
+            btn.className = 'btn';
+            btn.innerText = i === pageLen - 1 ? '完成' : '下一题';
+            btn.addEventListener('click', nextPage, false);
+            element.appendChild(btn);
+
+            return element;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            render();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            TWEEN.update();
+            stats.update();
+        }
+
+        function render() {
+            renderer.render(scene, camera);
+        }
