@@ -44,6 +44,10 @@ var path = {
     },
     clean: {
         src: root.dist
+    },
+    file: {
+        src: [root.src + '/file/**/*'],
+        dist: root.dist + '/static/file'
     }
 };
 
@@ -73,6 +77,16 @@ gulp.task('img', function() {
         .pipe(gulp.dest(path.img.dist))
         .pipe(reload({stream: true}))
         .pipe(notify({message: 'Img task complete'}))
+        ;
+})
+
+gulp.task('file', function() {
+    gulp.src(path.file.src)
+        .pipe(plumber())
+        .pipe(gwatch(path.file.dist))
+        .pipe(gulp.dest(path.file.dist))
+        .pipe(reload({stream: true}))
+        .pipe(notify({message: 'File task complete'}))
         ;
 })
 
@@ -153,10 +167,10 @@ gulp.task('watch', function(err){
 
 gulp.task('default', ['clean'], function(){
   // return gulp.start('view', 'browserify_module', 'browserify_coffee', 'less', 'watch');
-  runsequence('lib', 'module', 'browserify_script', 'less', 'view', 'browsersync', 'img', 'watch');
+  runsequence('lib', 'module', 'browserify_script', 'less', 'view', 'browsersync', 'img', 'file', 'watch');
 });
 
 gulp.task('build', ['clean'], function(){
   // return gulp.start('view', 'browserify_module', 'browserify_coffee', 'less', 'watch');
-  runsequence('lib', 'module', 'browserify_script', 'less', 'view', 'img');
+  runsequence('lib', 'module', 'browserify_script', 'less', 'view', 'img', 'file');
 });
