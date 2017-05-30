@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0")
+        title hilo
+        style.
+            body {
+                overflow: hidden;
+            }
+            #container {
+                position: relative;
+                height: 480px;
+                width: 320px;
+            }
+    body
+        #container
+        script(src="/threejs/static/lib/hilo/hilo-standalone.js")
+        script(src="/threejs/static/lib/hilo/hilo/renderer/WebGLRenderer.js")
+        script.
+            var containerElem = document.getElementById('container');
+            var stage = new Hilo.Stage({
+                renderType:'canvas',
+                container: containerElem,
+                width: 320,
+                height: 480
+            });
+
+            var ticker = new Hilo.Ticker(60);
+            ticker.addTick(stage);
+            ticker.start();
+
+
+            var bird = new Hilo.Bitmap({
+                image: '/threejs/static/img/hilo_bird.png'
+            }).addTo(stage);
+
+            //- stage.enableDOMEvent(Hilo.event.POINTER_START, true);
+            //- sprite.on(Hilo.event.POINTER_START, function(e){
+            //-     console.log(e.eventTarget, e.stageX, e.stageY);
+            //- });
