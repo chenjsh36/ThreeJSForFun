@@ -20,6 +20,9 @@ block content
         var ambientLight;
         var loader;
         var tdObject;
+        var mixer;
+        var clock = new THREE.Clock();
+
         window.tdObject = tdObject;
         init();
         //- buildGui();
@@ -62,15 +65,15 @@ block content
 
             //- 地面
             var groundMaterial = new THREE.MeshPhongMaterial({
-                    color: 0xFFFFFF,
+                    color: 0x333333,
                     side: THREE.FrontSide,
                     shading: THREE.SmoothShading
                 });
-            var ground = new THREE.Mesh( new THREE.PlaneBufferGeometry(512, 512), groundMaterial);
+            var ground = new THREE.Mesh( new THREE.PlaneBufferGeometry(5120, 5120), groundMaterial);
             ground.receiveShadow = true;
-            ground.position.z = -70;
+            ground.position.y = -200;
             ground.rotation.x = -Math.PI / 2;
-            //- scene.add(ground);
+            scene.add(ground);
 
             //- 立方体
             //- geometry = new THREE.BoxGeometry( 100, 100, 100 );
@@ -91,13 +94,24 @@ block content
             var lanurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/1e1dfc4da8dfe2d7f14f23f0996c7feb.gltf'
             var daiurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/e68183de37ea4bed1787f6051b1d1f94.gltf'
             var douurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/0ca2926cbf4bc664ff00b03c1a5d1f66.gltf'
-            loader.load(daiurl, function(data) {
+            loader.load(shanurl, function(data) {
                 var scalePoint = 1;
+                var animation;
 
                 gltf = data;
                 tdObject = gltf.scene;
-                tdObject.position.set(0, 100, 0);                
+                tdObject.position.set(0, 300, 0);                
                 tdObject.scale.set(scalePoint, scalePoint, scalePoint);
+                
+                var animations = gltf.animations;
+                if (animations && animations.length) {
+                    mixer = new THREE.AnimationMixer(tdObject);
+                    for (var i = 0; i < animations.length; i++) {
+                        var animation = animations[i];
+                        mixer.clipAction(animation).play();    
+                    }    
+                }
+
                 scene.add( tdObject );
             })
 
@@ -128,6 +142,10 @@ block content
         function animate() {
             requestAnimationFrame(animate);
             camera.lookAt(scene.position);
+            if (mixer) {
+                console.log('animate:', mixer);
+                mixer.update(clock.getDelta())
+            }
             stats.begin();
             render();
             stats.end();
