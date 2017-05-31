@@ -1,0 +1,191 @@
+extends threejslayout
+
+block content
+    style.
+        html, body {
+            height: 100%;
+        }
+    script(src="/threejs/static/lib/threejs/tween.min.js")
+    script(src="/threejs/static/lib/threejs/TrackballControls.js")
+    script(src="/threejs/static/lib/threejs/CSS3DRenderer.js")
+    script(src="/threejs/static/lib/threejs/SceneLoader.js")
+    script(src="/threejs/static/lib/threejs/FlyControls.js")
+    script(src="/threejs/static/lib/threejs/OrbitControls.js")
+    script(src="/threejs/static/lib/threejs/GLTFLoader.js")
+    
+    #container
+
+    script.
+        var scene,
+            camera,
+            renderer,
+            stats,
+            gui,
+            loader,
+            mixer
+            ;
+        var geometry,
+            material,
+            cube,
+            line;
+        var clock = new THREE.Clock();
+        var ambientLight;
+
+        init();
+        //- buildGui();
+        animate();
+
+        function init() {
+            var size = 500,
+                step = 50,
+                geometry,
+                i, j
+                ;
+            
+            //- Stats 
+            stats = new Stats();
+            document.body.appendChild(stats.dom);
+
+            //- 创建场景
+            scene = new THREE.Scene();
+        
+            //- 创建相机
+            camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000000 );
+            camera.position.z = 500000;
+            camera.position.y = 500000;
+            camera.position.x = 500000;
+            camera.lookAt(scene.position);
+
+            //- 渲染
+            renderer = new THREE.WebGLRenderer({antialias:true});
+            renderer.setClearColor( 0xf0f0f0 );
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+
+            //- 平面坐標系
+            var CoSystem = new THREEex.CoSystem(500, 50, 0x000000);
+            line = CoSystem.create();
+            scene.add(line);
+
+            //- 立方体
+            //- geometry = new THREE.BoxGeometry( 1, 1, 1 );
+            //- material = new THREE.MeshLambertMaterial( { color: 0xff7700} );
+            //- cube = new THREE.Mesh( geometry, material );
+            //- scene.add( cube );
+
+            //- 3d loader
+            loader = new THREE.GLTFLoader();
+            loader.setCrossOrigin('https://ossgw.alicdn.com');
+            //- var url = '/threejs/static/file/niu/2f17ddef947a7b6c702af69ff0e5b95f.gltf';
+            //- var url = 'https://ossgw.alicdn.com/tmall-c3/tmx/2f17ddef947a7b6c702af69ff0e5b95f.gltf'; // 牛
+            //- var url = 'https://ossgw.alicdn.com/tmall-c3/tmx/5e6c2c4bb052ef7562b52654c5635127.gltf'; // 草
+            //- var url = 'https://ossgw.alicdn.com/tmall-c3/tmx/1e1dfc4da8dfe2d7f14f23f0996c7feb.gltf'; // 篮子
+            var url = 'https://ossgw.alicdn.com/tmall-c3/tmx/51ff6704e19375613c3d4d3563348b7f.gltf'; // 山
+            //- var url = 'https://ossgw.alicdn.com/tmall-c3/tmx/03807648cf70d99a7c1d3d634a2d4ea3.gltf';
+            loader.load(url, function(data) {
+                console.log(data);
+                gltf = data;
+                var object = gltf.scene;
+
+                cameraIndex = 0;
+                cameras = [];
+                cameraNames = [];
+
+                
+                //- var animations = gltf.animations;
+                //- if (animations && animations.length) {
+                //-     mixer = new THREE.AnimationMixer(object);
+                //-     for (var i = 0; i < animations.length; i++) {
+                //-         var animation = animations[i];
+                //-         mixer.clipAction(animation).play();    
+                //-     }
+                //- }
+                //- object.position.set(0, 0, 0);
+                //- object.position.set(0, 0, 0);
+                //- object.scale.set(1, 1, 1);
+                scene.add(object);
+                
+            })
+
+            //- 环境灯
+            ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+
+            //- 点灯
+            var light = new THREE.PointLight(0xFFFF00);
+            light.position.set(500, 500, 500);
+            scene.add(light);
+
+            //- 绑定窗口大小，自适应
+            var threeexResize = new THREEex.WindowResize(renderer, camera);
+
+            //- threejs 的控制器
+            var controls = new THREE.OrbitControls( camera, renderer.domElement );
+            controls.target = new THREE.Vector3(0,15,0);
+            //- controls.maxPolarAngle = Math.PI / 2;
+            //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            camera.lookAt(scene.position);
+            if (mixer) mixer.update(clock.getDelta());
+            stats.begin();
+            render();
+            stats.end();
+        }
+
+        //- 循环体-渲染
+        function render() {
+            renderer.render( scene, camera );
+        }
+        
+        //- 调试框============================================================================
+        function clearGui() {
+            if (gui) gui.destroy();
+            gui = new dat.GUI();
+            gui.open();
+        }
+        function buildGui() {
+            clearGui();
+            addGui('cube pos x', cube.position.x, function(val) {
+                cube.position.x = val;
+            }, false, -500, 500);
+            addGui('cube pos y', cube.position.y, function(val) {
+                cube.position.y = val;
+            }, false, -100, 100);
+            addGui('cube pos z', cube.position.z, function(val) {
+                cube.position.z = val;
+            }, false, -500, 500);
+            addGui('camera pos x', camera.position.x, function(val) {
+                camera.position.x = val;
+            }, false, -500, 500);
+            addGui('camera pos y', camera.position.y, function(val) {
+                camera.position.y = val;
+            }, false, -100, 100);
+            addGui('camera pos z', camera.position.z, function(val) {
+                camera.position.z = val;
+            }, false, -500, 500);
+        }
+
+        function addGui( name, value, callback, isColor, min, max ) {
+            var node;
+            var param = { color: '0xffffff' };
+            param[ name ] = value;
+            if ( isColor ) {
+                node = gui.addColor( param, name ).onChange( function() {
+                    callback( param[ name ] );
+                } );
+            } else if ( typeof value == 'object' ) {
+                node = gui.add( param, name, value ).onChange( function() {
+                    callback( param[ name ] );
+                } );
+            } else {
+                node = gui.add( param, name, min, max ).onChange( function() {
+                    callback( param[ name ] );
+                } );
+            }
+            return node;
+        }
+        //- 调试框============================================================================
