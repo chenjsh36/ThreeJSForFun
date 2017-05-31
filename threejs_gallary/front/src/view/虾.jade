@@ -3,7 +3,7 @@ extends threejslayout
 block content
 
     script(src="/threejs/static/lib/threejs2/controls/OrbitControls.js")
-    script(src="/threejs/static/lib/threejs2/loaders/GLTFLoader.js")
+    script(src="/threejs/static/lib/threejs2/GLTFLoader.js")
 
     script.
         var scene,
@@ -22,7 +22,7 @@ block content
         var tdObject;
         window.tdObject = tdObject;
         init();
-        buildGui();
+        //- buildGui();
         animate();
 
         function init() {
@@ -47,7 +47,7 @@ block content
             camera.lookAt(scene.position);
 
             //- 渲染
-            renderer = new THREE.WebGLRenderer({antialias:true});
+            renderer = new THREE.WebGLRenderer();
             renderer.setClearColor( 0xf0f0f0 );
             renderer.setPixelRatio( window.devicePixelRatio );
             renderer.setSize( window.innerWidth, window.innerHeight );
@@ -63,19 +63,20 @@ block content
             //- 地面
             var groundMaterial = new THREE.MeshPhongMaterial({
                     color: 0xFFFFFF,
+                    side: THREE.FrontSide,
                     shading: THREE.SmoothShading
                 });
             var ground = new THREE.Mesh( new THREE.PlaneBufferGeometry(512, 512), groundMaterial);
             ground.receiveShadow = true;
             ground.position.z = -70;
             ground.rotation.x = -Math.PI / 2;
-            scene.add(ground);
+            //- scene.add(ground);
 
             //- 立方体
-            geometry = new THREE.BoxGeometry( 100, 100, 100 );
-            material = new THREE.MeshLambertMaterial( { color: 0xff7700} );
-            cube = new THREE.Mesh( geometry, material );
-            scene.add( cube );
+            //- geometry = new THREE.BoxGeometry( 100, 100, 100 );
+            //- material = new THREE.MeshLambertMaterial( { color: 0xff7700} );
+            //- cube = new THREE.Mesh( geometry, material );
+            //- scene.add( cube );
 
             //- gltf 3d模型导入
             loader = new THREE.GLTFLoader();
@@ -90,12 +91,12 @@ block content
             var lanurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/1e1dfc4da8dfe2d7f14f23f0996c7feb.gltf'
             var daiurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/e68183de37ea4bed1787f6051b1d1f94.gltf'
             var douurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/0ca2926cbf4bc664ff00b03c1a5d1f66.gltf'
-            loader.load(douurl, function(data) {
+            loader.load(daiurl, function(data) {
+                var scalePoint = 1;
 
                 gltf = data;
                 tdObject = gltf.scene;
-                tdObject.position.set(0, 0, 0);
-                var scalePoint = .1;
+                tdObject.position.set(0, 100, 0);                
                 tdObject.scale.set(scalePoint, scalePoint, scalePoint);
                 scene.add( tdObject );
             })
@@ -105,14 +106,14 @@ block content
             scene.add(ambientLight);
 
             //- 直射灯
-            var directionalLight = new THREE.DirectionalLight( 0xdddddd );
-            directionalLight.position.set( 0, 0, 1 ).normalize();
-            scene.add( directionalLight );
+            //- var directionalLight = new THREE.DirectionalLight( 0xdddddd );
+            //- directionalLight.position.set( 0, 0, 1 ).normalize();
+            //- scene.add( directionalLight );
 
             //- 点灯
-            var light = new THREE.PointLight(0xFFFFFF);
-            light.position.set(50000, 50000, 50000);
-            scene.add(light);
+            //- var light = new THREE.PointLight(0xFFFFFF);
+            //- light.position.set(50000, 50000, 50000);
+            //- scene.add(light);
 
             //- 绑定窗口大小，自适应
             var threeexResize = new THREEex.WindowResize(renderer, camera);

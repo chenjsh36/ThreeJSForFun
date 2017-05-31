@@ -52,10 +52,10 @@ block content
             var material = new THREE.MeshPhongMaterial({
                 color: 0x80ee10,
                 shiniess: 100,
-                side: THREE.DoubleSide,
-                clippingPlanes: [localPlane], // 通过这个平面截取掉一部分
+                side: THREE.BackSide,
+                //- clippingPlanes: [localPlane], // 通过这个平面截取掉一部分
                 //- clipShadows: true,
-                wireframe: true,
+                //- wireframe: true,
                 shading: THREE.FlatShading // THREE.SmoothShading
             }),
             geometry = new THREE.TorusKnotGeometry(.4, .08, 95, 20); // 创建一个环节
