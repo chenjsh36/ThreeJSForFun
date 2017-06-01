@@ -17,8 +17,8 @@ app.use(`${PREURL}/demo`, r_demo);
 
 
 let product = process.env.SSH_CLIENT ? false : true;
-let ip = product === true ? '127.0.0.1' : serverConfig.IP;
-let port = product === true ? 3088 : serverConfig.port;
+let ip = product === true ? '127.0.0.1' : '127.0.0.1'; //serverConfig.IP;
+let port = product === true ? 3088 : '3088'; //serverConfig.port;
 let server = app.listen(port, ip, function() {
     var host = server.address().address;
     var port = server.address().port;
