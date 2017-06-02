@@ -54,6 +54,9 @@ bubble3.start();
     var ifFishCatcherActive = false;
     var ifFishCatch = false;
     var fishStatus = 'swim'; // ['swim', 'catch', 'die'];
+    var fishBow;
+    var fishBowMixer;
+
     var clock = new THREE.Clock();
     var canvasContainer = document.getElementById('webgl-container');
 
@@ -112,6 +115,8 @@ bubble3.start();
         var douurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/0ca2926cbf4bc664ff00b03c1a5d1f66.gltf'
         var fishurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/03807648cf70d99a7c1d3d634a2d4ea3.gltf';
         var fishActiveurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/bb90ddfe2542267c142e892ab91f60ad.gltf';
+        var fishBowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/c5e934aae17373e927fe98aaf1f71767.gltf'
+        // 挣扎的鱼
         loader.load(fishActiveurl, function(data) {
             var scalePoint = 1;
             var animation;
@@ -124,7 +129,7 @@ bubble3.start();
 
             fishActive.scale.set(scalePoint, scalePoint, scalePoint);
             
-            var animations = gltf.animations;
+            var animations = data.animations;
             if (animations && animations.length) {
                 fishActiveMixer = new THREE.AnimationMixer(fishActive);
                 for (var i = 0; i < animations.length; i++) {
@@ -133,17 +138,18 @@ bubble3.start();
                 }    
             }
         })
+        // 游动的鱼
         loader.load(fishurl, function(data) {
             var scalePoint = 1;
             var animation;
 
             gltf = data;
-            fish = gltf.scene;
+            fish = data.scene;
             fish.position.set(0, 0, -240);
             fish.rotation.z = -Math.PI / 16;
             fish.scale.set(scalePoint, scalePoint, scalePoint);
             
-            var animations = gltf.animations;
+            var animations = data.animations;
             if (animations && animations.length) {
                 fishMixer = new THREE.AnimationMixer(fish);
                 for (var i = 0; i < animations.length; i++) {
@@ -153,6 +159,28 @@ bubble3.start();
             }
 
             scene.add( fish );
+        })
+        // 托盘
+        loader.load(fishBowUrl, function(data) {
+            var scalePoint = 1;
+            var animation;
+
+            gltf = data;
+            fishBow = data.scene;
+            fishBow.position.set(0, -400, 0); 
+            // fishBow.position.set(0, 0, -240);
+            fishBow.rotation.x = -Math.PI / 16;
+
+            fishBow.scale.set(scalePoint, scalePoint, scalePoint);
+            
+            var animations = data.animations;
+            if (animations && animations.length) {
+                fishBowMixer = new THREE.AnimationMixer(fishBow);
+                for (var i = 0; i < animations.length; i++) {
+                    var animation = animations[i];
+                    fishBowMixer.clipAction(animation).play();
+                }    
+            }
         })
         //- 环境灯
         ambientLight = new THREE.AmbientLight(0xffffff);
@@ -199,13 +227,19 @@ bubble3.start();
                     console.log('fish position:', fish);
                     new TWEEN.Tween(fish.position)
                         .to({
-                            y: -200
+                            y: -100
                         }, 1000)
                         .easing(TWEEN.Easing.Exponential.InOut)
                         .start();
                     new TWEEN.Tween(fish.rotation)
                         .to({
                             x: Math.PI / 4
+                        }, 1000)
+                        .easing(TWEEN.Easing.Exponential.InOut)
+                        .start();
+                    new TWEEN.Tween(fishBow.position)
+                        .to({
+                            y:-320 
                         }, 1000)
                         .easing(TWEEN.Easing.Exponential.InOut)
                         .start();
@@ -247,11 +281,19 @@ bubble3.start();
             fishActive && scene.remove(fishActive);
             fish && scene.add(fish);
             if (fishMixer) {
+                console.log('fishMixer');
                 fishMixer.update(clock.getDelta())
             }
         } else if (fishStatus === 'die') {
             fishActive && scene.remove(fishActive);
             fish && scene.add(fish);
+
+            fishBow && scene.add(fishBow);
+        }
+
+        if (fishBowMixer) {
+            console.log('fishBowMixer', fishBowMixer);
+            fishBowMixer.update(clock.getDelta());
         }
         TWEEN.update();
         // stats.begin();

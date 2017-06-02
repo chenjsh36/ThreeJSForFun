@@ -6,11 +6,13 @@ body,html {
 }
 body {
     // background-color: #59568f;    
-    // background: url('/threejs/static/img/canvas_QP0000_tian0084.png');
-    // background-size: cover;
+    background: url('/threejs/static/img/canvas_ship.png') repeat-x;
+    background-size: cover;
 
     background-color: transparent;
     overflow: hidden;
+
+    // animation: animatedBackground 10s linear infinite;
 }
 
 #webgl-container,
@@ -103,4 +105,9 @@ body {
     100% {  
         opacity: .1;
     }
+}
+
+@keyframes animatedBackground {
+  from { background-position: 0 0; }
+  to { background-position: -100% 0; }
 }
