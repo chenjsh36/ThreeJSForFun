@@ -8,9 +8,11 @@ block content
             height: 100%;
         }
         body {
-            background-color: #59568f;
+            background: url('/threejs/static/img/canvas_QP0000_tian0084.png');
+            background-size: cover;
         }
         .webgl-container,
+        #webgl-container,
         #bubbles,
         #bubbles2,
         #bubbles3 {
@@ -18,10 +20,41 @@ block content
             left: 0;
             top: 0;
         }
+        .light {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            background-size: 100%;
+            background-position: 50% 0;
+            background: url('/threejs/static/img/canvas_GuangXian_00000.png');
+        }
+        .yuwang {
+            position: absolute;
+            width: 100%;
+            height: 38%;
+            left: 50%;
+            transform: translate(-50%, 0);
+            bottom: 0;
+            margin-bottom: -100px;
+            background: url(/threejs/static/img/canvas_yuwang.png);
+            background-size: 100%;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            transition: .3s all;
+        }
+        .yuwang.active {
+            bottom: 50%;
+        }
+
     canvas#fishtank
     canvas#bubbles
     canvas#bubbles2
     canvas#bubbles3
+    .light
+    #webgl-container
+    .yuwang
 
     script(src="/threejs/static/lib/threejs2/controls/OrbitControls.js")
     script(src="/threejs/static/lib/threejs2/GLTFLoader.js")
@@ -439,6 +472,8 @@ block content
             var mixer;
             var clock = new THREE.Clock();
 
+            var $yuwang = $('.yuwang');
+
             window.tdObject = tdObject;
             init();
             //- buildGui();
@@ -452,8 +487,8 @@ block content
                     ;
                 
                 //- Stats 
-                stats = new Stats();
-                document.body.appendChild(stats.dom);
+                //- stats = new Stats();
+                //- document.body.appendChild(stats.dom);
 
                 //- 创建场景
                 scene = new THREE.Scene();
@@ -473,7 +508,9 @@ block content
                 renderer.shadowMap.enabled = true;
                 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
                 renderer.domElement.className = 'webgl-container';
-                document.body.appendChild( renderer.domElement );
+                var webglContainer = document.getElementById('webgl-container');
+                webglContainer.appendChild(renderer.domElement);
+                //- document.body.appendChild( renderer.domElement );
 
                 //- 平面坐標系
                 //- var CoSystem = new THREEex.CoSystem(500, 50, 0x000000);
@@ -517,7 +554,7 @@ block content
 
                     gltf = data;
                     tdObject = gltf.scene;
-                    tdObject.position.set(0, 0, 0);                
+                    tdObject.position.set(0, 200, 0);                
                     tdObject.scale.set(scalePoint, scalePoint, scalePoint);
                     
                     var animations = gltf.animations;
@@ -552,8 +589,11 @@ block content
                 //- threejs 的控制器
                 var controls = new THREE.OrbitControls( camera, renderer.domElement );
                 controls.target = new THREE.Vector3(0,15,0);
-                //- controls.maxPolarAngle = Math.PI / 2;
-                //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
+            
+                //- 點擊漁網
+                $yuwang.on('click', function() {
+                    $yuwang.toggleClass('active');
+                })
             }
             
             function animate() {
@@ -562,64 +602,13 @@ block content
                 if (mixer) {
                     mixer.update(clock.getDelta())
                 }
-                stats.begin();
+                //- stats.begin();
                 render();
-                stats.end();
+                //- stats.end();
             }
 
             //- 循环体-渲染
             function render() {
                 renderer.render( scene, camera );
             }
-            
-            //- 调试框============================================================================
-            function clearGui() {
-                if (gui) gui.destroy();
-                gui = new dat.GUI();
-                gui.open();
-            }
-            function buildGui() {
-                clearGui();
-                addGui('cube pos x', cube.position.x, function(val) {
-                    cube.position.x = val;
-                }, false, -500, 500);
-                addGui('cube pos y', cube.position.y, function(val) {
-                    cube.position.y = val;
-                }, false, -100, 100);
-                addGui('cube pos z', cube.position.z, function(val) {
-                    cube.position.z = val;
-                }, false, -500, 500);
-                addGui('camera pos x', camera.position.x, function(val) {
-                    camera.position.x = val;
-                }, false, -500, 500);
-                addGui('camera pos y', camera.position.y, function(val) {
-                    camera.position.y = val;
-                }, false, -100, 100);
-                addGui('camera pos z', camera.position.z, function(val) {
-                    camera.position.z = val;
-                }, false, -500, 500);
-            }
-
-            function addGui( name, value, callback, isColor, min, max ) {
-                var node;
-                var param = { color: '0xffffff' };
-                param[ name ] = value;
-                if ( isColor ) {
-                    node = gui.addColor( param, name ).onChange( function() {
-                        callback( param[ name ] );
-                    } );
-                } else if ( typeof value == 'object' ) {
-                    node = gui.add( param, name, value ).onChange( function() {
-                        callback( param[ name ] );
-                    } );
-                } else {
-                    node = gui.add( param, name, min, max ).onChange( function() {
-                        callback( param[ name ] );
-                    } );
-                }
-                return node;
-            }
-            //- 调试框============================================================================
-
         })(window)
-
