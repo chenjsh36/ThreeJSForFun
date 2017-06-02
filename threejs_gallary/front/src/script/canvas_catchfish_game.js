@@ -68,8 +68,8 @@ bubble3.start();
             ;
         
         //- Stats 
-        stats = new Stats();
-        document.body.appendChild(stats.dom);
+        // stats = new Stats();
+        // document.body.appendChild(stats.dom);
 
         //- 创建场景
         scene = new THREE.Scene();
@@ -216,11 +216,16 @@ bubble3.start();
                         })
                         .start();
                     // 气泡和背景鱼群消失
-                    $('#fishtank').addClass('hide');
-                    bubble1.stop();
-                    bubble2.stop();
-                    bubble3.stop();
-
+                    $('#fishtank').animate({opacity: 0}, 300);
+                    $('#bubbles').animate({opacity: 0}, 300, function() {
+                        bubble1.stop();
+                    })
+                    $('#bubbles').animate({opacity: 0}, 300, function() {
+                        bubble2.stop();
+                    })
+                    $('#bubbles').animate({opacity: 0}, 300, function() {
+                        bubble3.stop();
+                    })
                     $fishCatcher.animate({bottom: '-30%'}, 300, 'swing', function() {
                         ifFishCatcherActive = false;
                     })
@@ -249,9 +254,9 @@ bubble3.start();
             fish && scene.add(fish);
         }
         TWEEN.update();
-        stats.begin();
+        // stats.begin();
         render();
-        stats.end();
+        // stats.end();
     }
 
     //- 循环体-渲染
