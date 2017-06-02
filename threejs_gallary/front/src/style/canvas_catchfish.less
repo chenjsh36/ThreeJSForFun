@@ -5,7 +5,12 @@ body,html {
     height: 100%;
 }
 body {
-    background-color: #59568f;
+    // background-color: #59568f;    
+    // background: url('/threejs/static/img/canvas_QP0000_tian0084.png');
+    // background-size: cover;
+
+    background-color: transparent;
+    overflow: hidden;
 }
 
 #webgl-container,
@@ -15,4 +20,87 @@ body {
     position: absolute;
     left: 0;
     top: 0;
+}
+
+#fish-catcher {
+    position: absolute;
+    width: 80%;
+    height: 70%;
+    background-color: blue;
+    left: 50%;
+    bottom: -30%;
+    transform: translate(-50%, 0%);
+    background: url('/threejs/static/img/canvas_yuwang1.png') no-repeat;
+    background-size: 100% auto;
+    transform-origin: 50% bottom;
+    &.rotate {
+        animation: music-move .3s 0s infinite alternate ease-in-out;
+
+    }
+}
+#fish-catcher-right {
+    position: absolute;
+    width: 80%;
+    height: 64%;
+    background-color: blue;
+    left: 50%;
+    bottom: 0%;
+    transform: translate(-50%, 0%) rotate(5deg);
+    transform-origin: 50% bottom;
+    background: url('/threejs/static/img/canvas_yuwang2.png') no-repeat;
+    background-size: 100% auto;
+    opacity: 0;
+    &.rotate {
+        animation: music-show .1s 0s infinite alternate ease-in-out;
+    }
+}
+
+#fish-catcher-left {
+    position: absolute;
+    width: 80%;
+    height: 64%;
+    background-color: blue;
+    left: 50%;
+    bottom: 0%;
+    transform: translate(-50%, 0%) rotate(-5deg);
+    transform-origin: 50% bottom;
+    background: url('/threejs/static/img/canvas_yuwang3.png') no-repeat;
+    background-size: 100% auto;
+    opacity: 0;
+    &.rotate {
+        animation: music-show .1s 0s infinite alternate ease-in-out;
+    }
+}
+
+@keyframes music-move {
+    0% { 
+        // -webkit-transform: rotate(0deg);
+        transform: translate(-50%, 0%) rotate(0deg);
+    } 
+    33% {  
+        // -webkit-transform: rotate(-5deg);
+        transform: translate(-50%, 0%) rotate(-5deg);
+    }
+    66% {  
+        // -webkit-transform: rotate(5deg);
+        transform: translate(-50%, 0%) rotate(5deg);
+    }
+    100% {  
+        // -webkit-transform: rotate(0deg);
+        transform: translate(-50%, 0%) rotate(0deg);
+    }
+}
+@keyframes music-show {
+    0% {
+        opacity: 0;
+    } 
+    33% {
+        opacity: .33;  
+    }
+    66% {  
+        opacity: .66;
+    }
+    100% {  
+        opacity: .1;
+    }
 }

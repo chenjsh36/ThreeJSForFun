@@ -89,7 +89,7 @@ Bubbles.prototype = {
         };
     },
     drawCircle: function(x, y, radius) {
-        this.ctx.fillStyle = 'rgba(255, 255, 255, .5)';
+        this.ctx.fillStyle = 'rgba(234, 234, 239, .5)'; // rgb(234, 234, 239)
         this.ctx.beginPath();
         this.ctx.arc(x, y, radius, 0, Math.PI * 2, false);
         this.ctx.fill();

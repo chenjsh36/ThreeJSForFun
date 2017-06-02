@@ -42,14 +42,22 @@ bubble3.start();
     
     var ambientLight;
     var loader;
-    var tdObject;
-    var mixer;
+
+    var fish;
+    var fishActive;
+    var fishMixer;
+    var fishActiveMixer;
+    var ifFishActive = false;
+    var $fishCatcher = $('#fish-catcher');
+    var $fishCatcherLeft = $('#fish-catcher-left');
+    var $fishCatcherRight = $('#fish-catcher-right');
+    var ifFishCatcherActive = false;
+    var ifFishCatch = false;
+    var fishStatus = 'swim'; // ['swim', 'catch', 'die'];
     var clock = new THREE.Clock();
     var canvasContainer = document.getElementById('webgl-container');
 
-    window.tdObject = tdObject;
     init();
-    //- buildGui();
     animate();
 
     function init() {
@@ -68,9 +76,9 @@ bubble3.start();
     
         //- 创建相机
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000000 );
-        camera.position.z = 1500;
+        camera.position.z = -2000;
         camera.position.y = 0;
-        camera.position.x = -1500;
+        camera.position.x = 0;
         camera.lookAt(scene.position);
 
         //- 渲染
@@ -86,27 +94,9 @@ bubble3.start();
         canvasContainer.appendChild(renderer.domElement);
 
         //- 平面坐標系
-        //- var CoSystem = new THREEex.CoSystem(500, 50, 0x000000);
-        //- line = CoSystem.create();
-        //- scene.add(line);
-
-        //- 地面
-        //- var groundMaterial = new THREE.MeshPhongMaterial({
-        //-         color: 0x333333,
-        //-         side: THREE.FrontSide,
-        //-         shading: THREE.SmoothShading
-        //-     });
-        //- var ground = new THREE.Mesh( new THREE.PlaneBufferGeometry(5120, 5120), groundMaterial);
-        //- ground.receiveShadow = true;
-        //- ground.position.y = -200;
-        //- ground.rotation.x = -Math.PI / 2;
-        //- scene.add(ground);
-
-        //- 立方体
-        //- geometry = new THREE.BoxGeometry( 100, 100, 100 );
-        //- material = new THREE.MeshLambertMaterial( { color: 0xff7700} );
-        //- cube = new THREE.Mesh( geometry, material );
-        //- scene.add( cube );
+        // var CoSystem = new THREEex.CoSystem(500, 50, 0x000000);
+        // line = CoSystem.create();
+        // scene.add(line);
 
         //- gltf 3d模型导入
         loader = new THREE.GLTFLoader();
@@ -116,32 +106,54 @@ bubble3.start();
         var bburl = 'https://ossgw.alicdn.com/tmall-c3/tmx/7554d11d494d79413fc665e9ef140aa6.gltf'
         var cowurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/2f17ddef947a7b6c702af69ff0e5b95f.gltf'
         var doorurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/203247ec660952407695fdfaf45812af.gltf';
-        var fishurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/03807648cf70d99a7c1d3d634a2d4ea3.gltf';
         var demourl = 'https://ossgw.alicdn.com/tmall-c3/tmx/25ed65d4e9684567962230671512f731.gltf'
         var lanurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/1e1dfc4da8dfe2d7f14f23f0996c7feb.gltf'
         var daiurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/e68183de37ea4bed1787f6051b1d1f94.gltf'
         var douurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/0ca2926cbf4bc664ff00b03c1a5d1f66.gltf'
+        var fishurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/03807648cf70d99a7c1d3d634a2d4ea3.gltf';
+        var fishActiveurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/bb90ddfe2542267c142e892ab91f60ad.gltf';
+        loader.load(fishActiveurl, function(data) {
+            var scalePoint = 1;
+            var animation;
+
+            gltf = data;
+            fishActive = gltf.scene;
+            fishActive.position.set(0, 0, 0); 
+            fishActive.position.set(0, 0, -240);
+            fishActive.rotation.z = -Math.PI / 16;
+
+            fishActive.scale.set(scalePoint, scalePoint, scalePoint);
+            
+            var animations = gltf.animations;
+            if (animations && animations.length) {
+                fishActiveMixer = new THREE.AnimationMixer(fishActive);
+                for (var i = 0; i < animations.length; i++) {
+                    var animation = animations[i];
+                    fishActiveMixer.clipAction(animation).play();    
+                }    
+            }
+        })
         loader.load(fishurl, function(data) {
             var scalePoint = 1;
             var animation;
 
             gltf = data;
-            tdObject = gltf.scene;
-            tdObject.position.set(0, 0, 0);                
-            tdObject.scale.set(scalePoint, scalePoint, scalePoint);
+            fish = gltf.scene;
+            fish.position.set(0, 0, -240);
+            fish.rotation.z = -Math.PI / 16;
+            fish.scale.set(scalePoint, scalePoint, scalePoint);
             
             var animations = gltf.animations;
             if (animations && animations.length) {
-                mixer = new THREE.AnimationMixer(tdObject);
+                fishMixer = new THREE.AnimationMixer(fish);
                 for (var i = 0; i < animations.length; i++) {
                     var animation = animations[i];
-                    mixer.clipAction(animation).play();    
+                    fishMixer.clipAction(animation).play();    
                 }    
             }
 
-            scene.add( tdObject );
+            scene.add( fish );
         })
-
         //- 环境灯
         ambientLight = new THREE.AmbientLight(0xffffff);
         scene.add(ambientLight);
@@ -160,18 +172,83 @@ bubble3.start();
         var threeexResize = new THREEex.WindowResize(renderer, camera);
 
         //- threejs 的控制器
-        var controls = new THREE.OrbitControls( camera, renderer.domElement );
-        controls.target = new THREE.Vector3(0,15,0);
+        // var controls = new THREE.OrbitControls( camera, renderer.domElement );
+        // controls.target = new THREE.Vector3(0,15,0);
         //- controls.maxPolarAngle = Math.PI / 2;
         //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
+        
+        $fishCatcher.on('click', function() {
+            if (ifFishCatcherActive === true) return;
+            ifFishCatcherActive = true;
+            $fishCatcher.animate({bottom: '0%'}, 300, 'swing', function() {
+                // 渔网到达鱼的位置开始摇晃
+                fishStatus = 'catch';
+                $fishCatcher.addClass('rotate');
+                $fishCatcherLeft.addClass('rotate');
+                $fishCatcherRight.addClass('rotate');
+                
+                // 一段时间后放下渔网 
+                setTimeout(function() {
+                    // 停止摇晃渔网
+                    $fishCatcher.removeClass('rotate');
+                    $fishCatcherLeft.removeClass('rotate');
+                    $fishCatcherRight.removeClass('rotate');
+                    // 鱼状态改变
+                    fishStatus = 'die';
+                    TWEEN.removeAll();
+                    console.log('fish position:', fish);
+                    new TWEEN.Tween(fish.position)
+                        .to({
+                            y: -200
+                        }, 1000)
+                        .easing(TWEEN.Easing.Exponential.InOut)
+                        .start();
+                    new TWEEN.Tween(fish.rotation)
+                        .to({
+                            x: Math.PI / 4
+                        }, 1000)
+                        .easing(TWEEN.Easing.Exponential.InOut)
+                        .start();
+                    new TWEEN.Tween(this)
+                        .to({}, 1000 * 2)
+                        .onUpdate(function() {
+                            render();
+                        })
+                        .start();
+                    // 气泡和背景鱼群消失
+                    $('#fishtank').addClass('hide');
+                    bubble1.stop();
+                    bubble2.stop();
+                    bubble3.stop();
+
+                    $fishCatcher.animate({bottom: '-30%'}, 300, 'swing', function() {
+                        ifFishCatcherActive = false;
+                    })
+                }, 1000)
+            });
+        })
     }
     
     function animate() {
         requestAnimationFrame(animate);
         camera.lookAt(scene.position);
-        if (mixer) {
-            mixer.update(clock.getDelta())
+        if (fishStatus === 'catch') {
+            fish && scene.remove(fish);
+            fishActive && scene.add(fishActive);
+            if (fishActiveMixer) {
+                fishActiveMixer.update(clock.getDelta())
+            }
+        } else if (fishStatus === 'swim') {
+            fishActive && scene.remove(fishActive);
+            fish && scene.add(fish);
+            if (fishMixer) {
+                fishMixer.update(clock.getDelta())
+            }
+        } else if (fishStatus === 'die') {
+            fishActive && scene.remove(fishActive);
+            fish && scene.add(fish);
         }
+        TWEEN.update();
         stats.begin();
         render();
         stats.end();
@@ -181,55 +258,5 @@ bubble3.start();
     function render() {
         renderer.render( scene, camera );
     }
-    
-    //- 调试框============================================================================
-    function clearGui() {
-        if (gui) gui.destroy();
-        gui = new dat.GUI();
-        gui.open();
-    }
-    function buildGui() {
-        clearGui();
-        addGui('cube pos x', cube.position.x, function(val) {
-            cube.position.x = val;
-        }, false, -500, 500);
-        addGui('cube pos y', cube.position.y, function(val) {
-            cube.position.y = val;
-        }, false, -100, 100);
-        addGui('cube pos z', cube.position.z, function(val) {
-            cube.position.z = val;
-        }, false, -500, 500);
-        addGui('camera pos x', camera.position.x, function(val) {
-            camera.position.x = val;
-        }, false, -500, 500);
-        addGui('camera pos y', camera.position.y, function(val) {
-            camera.position.y = val;
-        }, false, -100, 100);
-        addGui('camera pos z', camera.position.z, function(val) {
-            camera.position.z = val;
-        }, false, -500, 500);
-    }
-
-    function addGui( name, value, callback, isColor, min, max ) {
-        var node;
-        var param = { color: '0xffffff' };
-        param[ name ] = value;
-        if ( isColor ) {
-            node = gui.addColor( param, name ).onChange( function() {
-                callback( param[ name ] );
-            } );
-        } else if ( typeof value == 'object' ) {
-            node = gui.add( param, name, value ).onChange( function() {
-                callback( param[ name ] );
-            } );
-        } else {
-            node = gui.add( param, name, min, max ).onChange( function() {
-                callback( param[ name ] );
-            } );
-        }
-        return node;
-    }
-    //- 调试框============================================================================
-
 })(window)
 /* 3d 海鲜 */
