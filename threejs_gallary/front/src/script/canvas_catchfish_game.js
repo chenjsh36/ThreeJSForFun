@@ -1,0 +1,235 @@
+var Bubbles = require('./canvas_catchfish_bubbles.js');
+require('./canvas_catchfish_fish.js');
+
+/* 气泡 */
+var winsize = {
+    width: window.innerWidth,
+    height: window.innerHeight
+};
+var bubble1 = new Bubbles({
+    canvasID: 'bubbles',
+    sourcex: winsize.width / 3,
+    sourcey: winsize.height - 30
+})
+var bubble2 = new Bubbles({
+    canvasID: 'bubbles2',
+    sourcex: winsize.width -30,
+    sourcey: winsize.height / 2
+})
+var bubble3 = new Bubbles({
+    canvasID: 'bubbles3',
+    sourcex: 30,
+    sourcey: winsize.height / 3
+})
+
+bubble1.start();
+bubble2.start();
+bubble3.start();
+/* 气泡 */
+
+/* 3d 海鲜 */
+;(function(){
+    var scene,
+        camera,
+        renderer,
+        stats,
+        gui
+        ;
+    var geometry,
+        material,
+        cube,
+        line;
+    
+    var ambientLight;
+    var loader;
+    var tdObject;
+    var mixer;
+    var clock = new THREE.Clock();
+    var canvasContainer = document.getElementById('webgl-container');
+
+    window.tdObject = tdObject;
+    init();
+    //- buildGui();
+    animate();
+
+    function init() {
+        var size = 500,
+            step = 50,
+            geometry,
+            i, j
+            ;
+        
+        //- Stats 
+        stats = new Stats();
+        document.body.appendChild(stats.dom);
+
+        //- 创建场景
+        scene = new THREE.Scene();
+    
+        //- 创建相机
+        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000000 );
+        camera.position.z = 1500;
+        camera.position.y = 0;
+        camera.position.x = -1500;
+        camera.lookAt(scene.position);
+
+        //- 渲染
+        renderer = new THREE.WebGLRenderer({antialias: false, alpha: true});
+        //- renderer.setClearColor( 0xffffffff );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.domElement.className = 'webgl-container';
+        
+        // document.body.appendChild( renderer.domElement );
+        canvasContainer.appendChild(renderer.domElement);
+
+        //- 平面坐標系
+        //- var CoSystem = new THREEex.CoSystem(500, 50, 0x000000);
+        //- line = CoSystem.create();
+        //- scene.add(line);
+
+        //- 地面
+        //- var groundMaterial = new THREE.MeshPhongMaterial({
+        //-         color: 0x333333,
+        //-         side: THREE.FrontSide,
+        //-         shading: THREE.SmoothShading
+        //-     });
+        //- var ground = new THREE.Mesh( new THREE.PlaneBufferGeometry(5120, 5120), groundMaterial);
+        //- ground.receiveShadow = true;
+        //- ground.position.y = -200;
+        //- ground.rotation.x = -Math.PI / 2;
+        //- scene.add(ground);
+
+        //- 立方体
+        //- geometry = new THREE.BoxGeometry( 100, 100, 100 );
+        //- material = new THREE.MeshLambertMaterial( { color: 0xff7700} );
+        //- cube = new THREE.Mesh( geometry, material );
+        //- scene.add( cube );
+
+        //- gltf 3d模型导入
+        loader = new THREE.GLTFLoader();
+        loader.setCrossOrigin('https://ossgw.alicdn.com');
+        var shanurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/51ff6704e19375613c3d4d3563348b7f.gltf';
+        var caourl = 'https://ossgw.alicdn.com/tmall-c3/tmx/5e6c2c4bb052ef7562b52654c5635127.gltf'
+        var bburl = 'https://ossgw.alicdn.com/tmall-c3/tmx/7554d11d494d79413fc665e9ef140aa6.gltf'
+        var cowurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/2f17ddef947a7b6c702af69ff0e5b95f.gltf'
+        var doorurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/203247ec660952407695fdfaf45812af.gltf';
+        var fishurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/03807648cf70d99a7c1d3d634a2d4ea3.gltf';
+        var demourl = 'https://ossgw.alicdn.com/tmall-c3/tmx/25ed65d4e9684567962230671512f731.gltf'
+        var lanurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/1e1dfc4da8dfe2d7f14f23f0996c7feb.gltf'
+        var daiurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/e68183de37ea4bed1787f6051b1d1f94.gltf'
+        var douurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/0ca2926cbf4bc664ff00b03c1a5d1f66.gltf'
+        loader.load(fishurl, function(data) {
+            var scalePoint = 1;
+            var animation;
+
+            gltf = data;
+            tdObject = gltf.scene;
+            tdObject.position.set(0, 0, 0);                
+            tdObject.scale.set(scalePoint, scalePoint, scalePoint);
+            
+            var animations = gltf.animations;
+            if (animations && animations.length) {
+                mixer = new THREE.AnimationMixer(tdObject);
+                for (var i = 0; i < animations.length; i++) {
+                    var animation = animations[i];
+                    mixer.clipAction(animation).play();    
+                }    
+            }
+
+            scene.add( tdObject );
+        })
+
+        //- 环境灯
+        ambientLight = new THREE.AmbientLight(0xffffff);
+        scene.add(ambientLight);
+
+        //- 直射灯
+        //- var directionalLight = new THREE.DirectionalLight( 0xdddddd );
+        //- directionalLight.position.set( 0, 0, 1 ).normalize();
+        //- scene.add( directionalLight );
+
+        //- 点灯
+        //- var light = new THREE.PointLight(0xFFFFFF);
+        //- light.position.set(50000, 50000, 50000);
+        //- scene.add(light);
+
+        //- 绑定窗口大小，自适应
+        var threeexResize = new THREEex.WindowResize(renderer, camera);
+
+        //- threejs 的控制器
+        var controls = new THREE.OrbitControls( camera, renderer.domElement );
+        controls.target = new THREE.Vector3(0,15,0);
+        //- controls.maxPolarAngle = Math.PI / 2;
+        //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
+    }
+    
+    function animate() {
+        requestAnimationFrame(animate);
+        camera.lookAt(scene.position);
+        if (mixer) {
+            mixer.update(clock.getDelta())
+        }
+        stats.begin();
+        render();
+        stats.end();
+    }
+
+    //- 循环体-渲染
+    function render() {
+        renderer.render( scene, camera );
+    }
+    
+    //- 调试框============================================================================
+    function clearGui() {
+        if (gui) gui.destroy();
+        gui = new dat.GUI();
+        gui.open();
+    }
+    function buildGui() {
+        clearGui();
+        addGui('cube pos x', cube.position.x, function(val) {
+            cube.position.x = val;
+        }, false, -500, 500);
+        addGui('cube pos y', cube.position.y, function(val) {
+            cube.position.y = val;
+        }, false, -100, 100);
+        addGui('cube pos z', cube.position.z, function(val) {
+            cube.position.z = val;
+        }, false, -500, 500);
+        addGui('camera pos x', camera.position.x, function(val) {
+            camera.position.x = val;
+        }, false, -500, 500);
+        addGui('camera pos y', camera.position.y, function(val) {
+            camera.position.y = val;
+        }, false, -100, 100);
+        addGui('camera pos z', camera.position.z, function(val) {
+            camera.position.z = val;
+        }, false, -500, 500);
+    }
+
+    function addGui( name, value, callback, isColor, min, max ) {
+        var node;
+        var param = { color: '0xffffff' };
+        param[ name ] = value;
+        if ( isColor ) {
+            node = gui.addColor( param, name ).onChange( function() {
+                callback( param[ name ] );
+            } );
+        } else if ( typeof value == 'object' ) {
+            node = gui.add( param, name, value ).onChange( function() {
+                callback( param[ name ] );
+            } );
+        } else {
+            node = gui.add( param, name, min, max ).onChange( function() {
+                callback( param[ name ] );
+            } );
+        }
+        return node;
+    }
+    //- 调试框============================================================================
+
+})(window)
+/* 3d 海鲜 */

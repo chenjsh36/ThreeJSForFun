@@ -57,7 +57,8 @@
     "nodemon": "^1.9.1",
     "pug": "^2.0.0-beta11",
     "run-sequence": "^1.1.5",
-    "superagent": "^1.8.4"
+    "superagent": "^1.8.4",
+    "tween.js": "^16.6.0"
   },
   "devDependencies": {
     "three": "^0.84.0"

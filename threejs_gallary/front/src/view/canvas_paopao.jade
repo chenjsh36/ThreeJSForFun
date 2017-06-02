@@ -28,10 +28,11 @@ block content
 
     //- 魚群
     script.
-        /* ---------------- FISH "CLASS" START -------------- */
-        var FOLLOW_DISTANCE = 100;
+        ;(function() {
+            /* ---------------- FISH "CLASS" START -------------- */
+            var FOLLOW_DISTANCE = 100;
 
-        var Fish = function() {
+            var Fish = function() {
                 // dx/yx is current speed, ox/oy is the previous one
                 this.ox = this.dx = Math.random() - 0.5;
                 this.oy = this.dy = Math.random() - 0.5;
@@ -142,140 +143,140 @@ block content
                     this.y += this.dy;
                 }
             }
-        /* ---------------------- FISH "CLASS" END -------------- */
+            /* ---------------------- FISH "CLASS" END -------------- */
 
-        /* ---------------------- MAIN START -------------------- */
-        var canvas = document.getElementById('fishtank');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        var context = canvas.getContext('2d');
+            /* ---------------------- MAIN START -------------------- */
+            var canvas = document.getElementById('fishtank');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            var context = canvas.getContext('2d');
 
-        var fishes = [];
+            var fishes = [];
 
 
-        var speedBoostCountdown = 100,
-            speedBoost = 0,
-            SPEED_BOOST = 2;
-        var fishBitmap = new Image()
-        fishBitmap.onload = function() {
-            update();
-        };
-        fishBitmap.src = "/threejs/static/img/canvas_fish.png";
+            var speedBoostCountdown = 100,
+                speedBoost = 0,
+                SPEED_BOOST = 2;
+            var fishBitmap = new Image()
+            fishBitmap.onload = function() {
+                update();
+            };
+            fishBitmap.src = "/threejs/static/img/canvas_fish.png";
 
-        //Draw Circle
-        function draw(f) {
-            var r = f.angle + Math.PI;
+            //Draw Circle
+            function draw(f) {
+                var r = f.angle + Math.PI;
 
-            context.translate(f.x, f.y);
-            context.rotate(r);
+                context.translate(f.x, f.y);
+                context.rotate(r);
 
-            var w = 20;
-            var acc = py(f.dx - f.ox, f.dy - f.oy) / 0.05;
+                var w = 20;
+                var acc = py(f.dx - f.ox, f.dy - f.oy) / 0.05;
 
-            // If a fish does a "flip", make it less wide
-            if (acc > 1) {
-                w = 10 + 10 / acc;
+                // If a fish does a "flip", make it less wide
+                if (acc > 1) {
+                    w = 10 + 10 / acc;
+                }
+
+                context.drawImage(fishBitmap, 0, 0, w, 6);
+                context.rotate(-r);
+                context.translate(-f.x, -f.y);
             }
 
-            context.drawImage(fishBitmap, 0, 0, w, 6);
-            context.rotate(-r);
-            context.translate(-f.x, -f.y);
-        }
+            // Pythagoras shortcut
+            function py(a, b) {
+                return Math.sqrt(a * a + b * b);
+            }
 
-        // Pythagoras shortcut
-        function py(a, b) {
-            return Math.sqrt(a * a + b * b);
-        }
-
-        //------------ USER INPUT START -------------
-        var cursor = {
-            x: 0,
-            y: 0
-        };
-        var cursorDown = false,
-            keyDown = false;
-
-        document.onmousemove = function(e) {
-            cursor.x = e.pageX - (window.innerWidth / 2 - canvas.width / 2);
-            cursor.y = e.pageY - (window.innerHeight / 2 - canvas.height / 2);
-        }
-
-        document.onmouseout = function(e) { //Out of screen is not a valid pos
-            cursor.y = cursor.x = Number.MAX_VALUE;
-        }
-
-        document.onmousedown = function() {
-            activateSpeedBoost();
-            cursorDown = true;
-        }
-        document.onmouseup = function() {
-            cursorDown = false;
-        }
-
-        document.onkeydown = function() {
-            keyDown = true;
-        }
-
-        document.onkeyup = function() {
+            //------------ USER INPUT START -------------
+            var cursor = {
+                x: 0,
+                y: 0
+            };
+            var cursorDown = false,
                 keyDown = false;
-            }
+
+            //- document.onmousemove = function(e) {
+            //-     cursor.x = e.pageX - (window.innerWidth / 2 - canvas.width / 2);
+            //-     cursor.y = e.pageY - (window.innerHeight / 2 - canvas.height / 2);
+            //- }
+
+            //- document.onmouseout = function(e) { //Out of screen is not a valid pos
+            //-     cursor.y = cursor.x = Number.MAX_VALUE;
+            //- }
+
+            //- document.onmousedown = function() {
+            //-     activateSpeedBoost();
+            //-     cursorDown = true;
+            //- }
+            //- document.onmouseup = function() {
+            //-     cursorDown = false;
+            //- }
+
+            //- document.onkeydown = function() {
+            //-     keyDown = true;
+            //- }
+
+            //- document.onkeyup = function() {
+            //-         keyDown = false;
+            //- }
             //------------ USER INPUT STOP -------------
 
-        function deltaAngle(f, o) { //Find the shortest angle between two
-            var r = f - o;
-            return Math.atan2(Math.sin(r), Math.cos(r));
-        }
-
-        function affinityLine(f, o, c) { //Draw a line with pretty gradient
-            var grad = context.createLinearGradient(f.x, f.y, o.x, o.y);
-            grad.addColorStop(0, c);
-            grad.addColorStop(1, "black");
-
-            context.strokeStyle = grad;
-            context.beginPath();
-            context.moveTo(f.x, f.y);
-            context.lineTo(o.x, o.y);
-            context.stroke();
-        }
-
-        function activateSpeedBoost() {
-            speedBoostCountdown = 400 + Math.round(400 * Math.random());
-            speedBoost = SPEED_BOOST;
-        }
-
-        //Update and draw all of them
-        function update() {
-                if (fishes.length < 600) {
-                    fishes.push(new Fish());
-                }
-
-                if (!cursorDown) {
-                    //clear the canvas
-                    canvas.width = canvas.width; //Try commenting this line :-)
-
-                    //Update and draw fish
-                    for (var i = 0; i < fishes.length; i++) {
-                        var fish = fishes[i];
-                        fish.calc();
-                        draw(fish);
-                    }
-                }
-
-                speedBoostCountdown--;
-                if (speedBoostCountdown < 0) {
-                    activateSpeedBoost();
-                }
-
-                if (speedBoost > 0) {
-                    speedBoost -= SPEED_BOOST / 80; //Reduce speed bost fast!
-                } else {
-                    speedBoost = 0;
-                }
-
-                requestAnimationFrame(update);
+            function deltaAngle(f, o) { //Find the shortest angle between two
+                var r = f - o;
+                return Math.atan2(Math.sin(r), Math.cos(r));
             }
-        /* ---------------------- MAIN END ----------------------- */
 
+            function affinityLine(f, o, c) { //Draw a line with pretty gradient
+                var grad = context.createLinearGradient(f.x, f.y, o.x, o.y);
+                grad.addColorStop(0, c);
+                grad.addColorStop(1, "black");
+
+                context.strokeStyle = grad;
+                context.beginPath();
+                context.moveTo(f.x, f.y);
+                context.lineTo(o.x, o.y);
+                context.stroke();
+            }
+
+            function activateSpeedBoost() {
+                speedBoostCountdown = 400 + Math.round(400 * Math.random());
+                speedBoost = SPEED_BOOST;
+            }
+
+            //Update and draw all of them
+            function update() {
+                    if (fishes.length < 100) {
+                        fishes.push(new Fish());
+                    }
+
+                    if (!cursorDown) {
+                        //clear the canvas
+                        canvas.width = canvas.width; //Try commenting this line :-)
+
+                        //Update and draw fish
+                        for (var i = 0; i < fishes.length; i++) {
+                            var fish = fishes[i];
+                            fish.calc();
+                            draw(fish);
+                        }
+                    }
+
+                    speedBoostCountdown--;
+                    if (speedBoostCountdown < 0) {
+                        activateSpeedBoost();
+                    }
+
+                    if (speedBoost > 0) {
+                        speedBoost -= SPEED_BOOST / 80; //Reduce speed bost fast!
+                    } else {
+                        speedBoost = 0;
+                    }
+
+                    requestAnimationFrame(update);
+                }
+            /* ---------------------- MAIN END ----------------------- */
+        }())
     //- 氣泡
     script.
         ;(function(window) {
