@@ -7,12 +7,12 @@ body,html {
 body {
     // background-color: #59568f;    
     background: url('/threejs/static/img/canvas_ship.png') repeat-x;
-    background-size: cover;
+    // background-size: auto 100%;
 
     background-color: transparent;
     overflow: hidden;
 
-    // animation: animatedBackground 10s linear infinite;
+    animation: animatedBackground 10s linear infinite;
 }
 
 #webgl-container,
@@ -23,26 +23,39 @@ body {
     left: 0;
     top: 0;
 }
-
-#fish-catcher {
+// 影藏
+#fish-hider {
     position: absolute;
-    width: 80%;
+    width: 90%;
     height: 70%;
     background-color: blue;
     left: 50%;
-    bottom: -30%;
+    bottom: -43%;
+    transform: translate(-50%, 0%);
+    background: url('/threejs/static/img/canvas_yuwang1.png') no-repeat;
+    background-size: 100% auto;
+    transform-origin: 50% bottom;
+    opacity: 0;
+}
+#fish-catcher {
+    position: absolute;
+    width: 90%;
+    height: 70%;
+    background-color: blue;
+    left: 50%;
+    bottom: -43%;
     transform: translate(-50%, 0%);
     background: url('/threejs/static/img/canvas_yuwang1.png') no-repeat;
     background-size: 100% auto;
     transform-origin: 50% bottom;
     &.rotate {
-        animation: music-move .3s 0s infinite alternate ease-in-out;
+        animation: music-move .5s 0s infinite alternate ease-in-out;
 
     }
 }
 #fish-catcher-right {
     position: absolute;
-    width: 80%;
+    width: 90%;
     height: 64%;
     background-color: blue;
     left: 50%;
@@ -53,13 +66,13 @@ body {
     background-size: 100% auto;
     opacity: 0;
     &.rotate {
-        animation: music-show .1s 0s infinite alternate ease-in-out;
+        animation: music-show .3s 0s infinite alternate ease-in-out;
     }
 }
 
 #fish-catcher-left {
     position: absolute;
-    width: 80%;
+    width: 90%;
     height: 64%;
     background-color: blue;
     left: 50%;
@@ -70,7 +83,7 @@ body {
     background-size: 100% auto;
     opacity: 0;
     &.rotate {
-        animation: music-show .1s 0s infinite alternate ease-in-out;
+        animation: music-show .3s 0s infinite alternate ease-in-out;
     }
 }
 

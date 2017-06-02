@@ -48,6 +48,7 @@ bubble3.start();
     var fishMixer;
     var fishActiveMixer;
     var ifFishActive = false;
+    var $fishHider = $('#fish-hider');
     var $fishCatcher = $('#fish-catcher');
     var $fishCatcherLeft = $('#fish-catcher-left');
     var $fishCatcherRight = $('#fish-catcher-right');
@@ -80,7 +81,7 @@ bubble3.start();
         //- 创建相机
         camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000000 );
         camera.position.z = -2000;
-        camera.position.y = 0;
+        camera.position.y = 100;
         camera.position.x = 0;
         camera.lookAt(scene.position);
 
@@ -124,7 +125,7 @@ bubble3.start();
             gltf = data;
             fishActive = gltf.scene;
             fishActive.position.set(0, 0, 0); 
-            fishActive.position.set(0, 0, -240);
+            fishActive.position.set(0, 0, -280);
             fishActive.rotation.z = -Math.PI / 16;
 
             fishActive.scale.set(scalePoint, scalePoint, scalePoint);
@@ -145,7 +146,7 @@ bubble3.start();
 
             gltf = data;
             fish = data.scene;
-            fish.position.set(0, 0, -240);
+            fish.position.set(0, 0, -280);
             fish.rotation.z = -Math.PI / 16;
             fish.scale.set(scalePoint, scalePoint, scalePoint);
             
@@ -205,7 +206,9 @@ bubble3.start();
         //- controls.maxPolarAngle = Math.PI / 2;
         //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
         
-        $fishCatcher.on('click', function() {
+        $fishHider.on('click', function() {
+            $fishHider.hide();
+        // $fishCatcher.on('click', function() {
             if (ifFishCatcherActive === true) return;
             ifFishCatcherActive = true;
             $fishCatcher.animate({bottom: '0%'}, 300, 'swing', function() {
@@ -214,7 +217,28 @@ bubble3.start();
                 $fishCatcher.addClass('rotate');
                 $fishCatcherLeft.addClass('rotate');
                 $fishCatcherRight.addClass('rotate');
-                
+                TWEEN.removeAll();
+                var left = new TWEEN.Tween(fishActive.position)
+                    .to({
+                        x: -300
+                    }, 300)
+                var right = new TWEEN.Tween(fishActive.position)
+                    .to({
+                        x: 300
+                    }, 300)
+                var circle = right.chain(left);
+                circle.repeat(6)
+                    .start();
+                    // .onUpdate(function() {
+                    //     console.log('update camera position', this);
+                    // })
+                    // .start();
+                new TWEEN.Tween(this)
+                    .to({}, 1000 * 2)
+                    .onUpdate(function() {
+                        render();
+                    })
+                    .start();
                 // 一段时间后放下渔网 
                 setTimeout(function() {
                     // 停止摇晃渔网
@@ -224,13 +248,14 @@ bubble3.start();
                     // 鱼状态改变
                     fishStatus = 'die';
                     TWEEN.removeAll();
-                    console.log('fish position:', fish);
-                    new TWEEN.Tween(fish.position)
-                        .to({
-                            y: -100
-                        }, 1000)
-                        .easing(TWEEN.Easing.Exponential.InOut)
-                        .start();
+                    // console.log('fish position:', fish);
+                    // new TWEEN.Tween(fish.position)
+                    //     .to({
+                    //         y: -100
+                    //     }, 1000)
+                    //     .easing(TWEEN.Easing.Exponential.InOut)
+                    //     .start();
+
                     new TWEEN.Tween(fish.rotation)
                         .to({
                             x: Math.PI / 4
@@ -239,7 +264,7 @@ bubble3.start();
                         .start();
                     new TWEEN.Tween(fishBow.position)
                         .to({
-                            y:-320 
+                            y:-310 
                         }, 1000)
                         .easing(TWEEN.Easing.Exponential.InOut)
                         .start();
@@ -260,10 +285,10 @@ bubble3.start();
                     $('#bubbles').animate({opacity: 0}, 300, function() {
                         bubble3.stop();
                     })
-                    $fishCatcher.animate({bottom: '-30%'}, 300, 'swing', function() {
+                    $fishCatcher.animate({bottom: '-100%'}, 300, 'swing', function() {
                         ifFishCatcherActive = false;
                     })
-                }, 1000)
+                }, 2000)
             });
         })
     }
