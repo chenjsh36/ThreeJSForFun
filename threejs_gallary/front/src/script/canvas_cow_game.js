@@ -70,9 +70,9 @@ function init() {
     webglContainer.appendChild(renderer.domElement);
 
     // - 平面坐標系
-    var CoSystem = new THREEex.CoSystem(500, 50, 0x000000);
-    line = CoSystem.create();
-    scene.add(line);
+    // var CoSystem = new THREEex.CoSystem(500, 50, 0x000000);
+    // line = CoSystem.create();
+    // scene.add(line);
 
     //- gltf 3d模型导入
     loader = new THREE.GLTFLoader();
