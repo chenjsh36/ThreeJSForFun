@@ -1,25 +1,71 @@
-body,html {
-    padding: 0;
-    margin: 0;
+body,
+html {
     width: 100%;
     height: 100%;
+    padding: 0;
+    margin: 0;
 }
 body {
-    // background-color: #59568f;    
-    // background: url('/threejs/static/img/canvas_ship.png') repeat-x;
-    // background-size: cover;
+    overflow: hidden;
 
     background-color: transparent;
-    overflow: hidden;
-    // animation: animatedBackground 10s linear infinite;
 }
-
-
 #webgl-container,
 .webgl-container {
     position: absolute;
+    top: 0;
+    left: 0;
+
     width: 100%;
     height: 100%;
-    left: 0;
-    top: 0;
+}
+
+#milkbox {
+    position: absolute;
+    right: 26%;
+    bottom: 52px;
+
+    display: none;
+    width: 30%;
+    height: 158px;
+
+    background: url(/threejs/static/img/milk/milk1.png);
+    background-size: cover;
+}
+
+#milkink {
+    position: absolute;
+    right: 26%;
+    bottom: 100px;
+
+    display: none;
+    width: 30%;
+    height: 158px;
+
+    background: url(/threejs/static/img/milkink/milkink1.png);
+    background-size: cover;
+}
+
+#milk {
+    position: absolute;
+    right: 25%;
+    bottom: -100%;
+
+    width: 100%;
+    height: 504px;
+
+    background: url(/threejs/static/img/box.png);
+    background-size: cover;
+}
+
+#fly {
+    position: absolute;
+    top: 10px;
+    right: 25%;
+
+    width: 100%;
+    height: 504px;
+
+    background: url(/threejs/static/img/fly.png);
+    background-size: cover;
 }

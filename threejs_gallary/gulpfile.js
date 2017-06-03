@@ -73,10 +73,7 @@ gulp.task('module', function() {
 gulp.task('img', function() {
     gulp.src(path.img.src)
         .pipe(plumber())
-        .pipe(gwatch(path.img.dist))
         .pipe(gulp.dest(path.img.dist))
-        .pipe(reload({stream: true}))
-        .pipe(notify({message: 'Img task complete'}))
         ;
 })
 

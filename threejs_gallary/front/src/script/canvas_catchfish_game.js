@@ -306,7 +306,7 @@ bubble3.start();
             fishActive && scene.remove(fishActive);
             fish && scene.add(fish);
             if (fishMixer) {
-                console.log('fishMixer');
+                // console.log('fishMixer');
                 fishMixer.update(clock.getDelta())
             }
         } else if (fishStatus === 'die') {
@@ -317,7 +317,7 @@ bubble3.start();
         }
 
         if (fishBowMixer) {
-            console.log('fishBowMixer', fishBowMixer);
+            // console.log('fishBowMixer', fishBowMixer);
             fishBowMixer.update(clock.getDelta());
         }
         TWEEN.update();
