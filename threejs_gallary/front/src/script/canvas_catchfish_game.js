@@ -617,15 +617,17 @@ function showShipFly() {
 
 // 执行--------------------------------------
 var waitImgList = [
-    '/threejs/static/img/上下云透明',
-    '/threejs/static/img/canvas_ship.png',
+    // '/threejs/static/img/上下云透明',
+    // '/threejs/static/img/canvas_ship.png',
     '/threejs/static/img/canvas_yuwang1.png',
     '/threejs/static/img/canvas_yuwang1.png',
     '/threejs/static/img/canvas_yuwang2.png',
-    '/threejs/static/img/canvas_yuwang3.png'
+    '/threejs/static/img/canvas_yuwang3.png',
+    '/threejs/static/img/yuwang/YW0000.png',
+    '/threejs/static/img/ship/chuan0045.png'
 ];
-catcherPicList = getFlyCatcherPicList();
-shipPicList = getFlyShipPicList();
+// catcherPicList = getFlyCatcherPicList();
+// shipPicList = getFlyShipPicList();
 loadAllImage(waitImgList.concat(catcherPicList, shipPicList))
 .then(function(Imgdata) {
     imgData = Imgdata
