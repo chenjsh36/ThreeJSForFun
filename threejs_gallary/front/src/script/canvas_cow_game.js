@@ -333,7 +333,7 @@ function init() {
             } else if(j < 38) {
                 url = 'url(/threejs/static/img/milkink/milkink'+(j-27)+'.png)';
                 $milkink.css('background',url);
-                $milkink.css('background-size','cover');                
+                $milkink.css('background-size', 'cover');                
             }
         };
 

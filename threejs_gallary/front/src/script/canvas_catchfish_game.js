@@ -56,6 +56,8 @@ var $fishCatcher2 = $('#fish-catcher2');
 
 var clock = new THREE.Clock();
 var canvasContainer = document.getElementById('webgl-container');
+
+imgData = [];
 // 变量定义---------------------------------------------------
 
 // 函数定义-------------------------------------------
@@ -131,7 +133,7 @@ function init() {
         }    
     }
     scene.add( fish );
-    // showSwimFish()
+    showSwimFish()
 
     // 托盘
     fishBow = fishBowFile.scene;
@@ -199,7 +201,7 @@ function init() {
             },
             duration: 200,
             easing: 'linear',
-            complete: function() {
+            done: function() {
                 // console.log('catch fish!!!');
                 $fishCatcher2.show();
                 $fishCatcher.hide();
@@ -210,84 +212,107 @@ function init() {
                 var left = new TWEEN.Tween(fishActive.position)
                     .to({
                         x: -150
-                    }, 500)
+                    }, 800)
                 var leftToMiddle = new TWEEN.Tween(fishActive.position)
                     .to({
-                        x: 0.1
-                    }, 500)
+                        x: 0
+                    }, 700)
                 var rightToMiddle = new TWEEN.Tween(fishActive.position)
                     .to({
-                        x: 0.1
-                    }, 500)
+                        x: 0
+                    }, 700)
                 var right = new TWEEN.Tween(fishActive.position)
                     .to({
                         x: 200
-                    }, 500)
-                leftToMiddle.chain(left);
-                right.chain(leftToMiddle);
-                var circle = rightToMiddle.chain(right);
-                circle.repeat(1)
-                    .onStart(function() {
-                        showCatcherShade();
+                    }, 800)
+                // leftToMiddle.chain(left);
+                // right.chain(leftToMiddle);
+                left.chain(leftToMiddle);
+                rightToMiddle.chain(left);
+                var circle = right.chain(rightToMiddle);
+                circle.onStart(function() {
+                        // setTimeout(showCatcherShade, 1000);
+                        // showCatcherShade();
                     })
                     .start();
                 new TWEEN.Tween(this)
-                    .to({}, 2000 * 2)
+                    .to({}, 3000 * 2)
                     .onUpdate(function() {
                         render();
                     })
                     .start();
-            
-                // showCatcherShade();
+                // setTimeout(showCatcherShade, 1300);
+                showCatcherShade();
             }
         });
     })
 }
 
 function showSwimFish() {
-    var top = new TWEEN.Tween({i: 0})
+    console.log('showSwimFish####!!');
+    var curx = fish.position.x;
+    var cury = fish.position.y;
+    var top = new TWEEN.Tween({i: cury})
         .to({
             i: 40
         }, 1000)
+        .delay(3000)
+        // .onStart(function() {
+        //     this.i = fish.position.y;
+        //     console.log(this.i, fish.position.y);
+        // })
         .onUpdate(function() {
             fish.position.y = this.i;
         })
         .easing(TWEEN.Easing.Exponential.InOut)
-    var bottom = new TWEEN.Tween({i: 0})
+    var bottom = new TWEEN.Tween({i: cury})
         .to({
-            i: 40
+            i: -40
         }, 1000)
+        .delay(3000)
+        // .onStart(function() {
+        //     this.i = fish.position.y;
+        // })
         .onUpdate(function() {
-            fish.position.y = -this.i;
+            fish.position.y = this.i;
         })
         .easing(TWEEN.Easing.Exponential.InOut)
-    var left = new TWEEN.Tween({i: 0})
+    var left = new TWEEN.Tween({i: curx})
         .to({
-            i: 40
+            i: -40
         }, 1000)
-        .onUpdate(function() {
-            fish.position.x = -this.i;
-        })
-        .easing(TWEEN.Easing.Exponential.InOut)
-    var right = new TWEEN.Tween({i: 0})
-        .to({
-            i: 40
-        }, 1000)
+        .delay(3000)
+        // .onStart(function() {
+        //     this.i = fish.position.x;
+        // })
         .onUpdate(function() {
             fish.position.x = this.i;
         })
         .easing(TWEEN.Easing.Exponential.InOut)
-    // var tmp;
-    top.chain(right);
-    // left.chain(top);
-    // bottom.chain(left);
-    top.repeat(100)
-        .start();
+    var right = new TWEEN.Tween({i: curx})
+        .to({
+            i: 40
+        }, 1000)
+        .delay(3000)
+        // .onStart(function() {
+        //     this.i = fish.position.x;
+        // })
+        .onUpdate(function() {
+            fish.position.x = this.i;
+        })
+        .easing(TWEEN.Easing.Exponential.InOut)
+    var cartoon = [top, bottom, left, right];
+    var random = Math.floor(Math.random() * 4 - .0001)
+    var cart = cartoon[random];
+
+    cart.onComplete(function() {
+        showSwimFish();
+    }).start()
 }
 
 function animate() {
     requestAnimationFrame(animate);
-
+    var now = Date.now();
 
     if (fishStatus === 'catch') {
         fish && scene.remove(fish);
@@ -546,6 +571,7 @@ function showShipFly() {
 
 // 执行--------------------------------------
 var waitImgList = [
+    '/threejs/static/img/上下云透明',
     '/threejs/static/img/canvas_ship.png',
     '/threejs/static/img/canvas_yuwang1.png',
     '/threejs/static/img/canvas_yuwang1.png',
@@ -556,6 +582,7 @@ catcherPicList = getFlyCatcherPicList();
 shipPicList = getFlyShipPicList();
 loadAllImage(waitImgList.concat(catcherPicList, shipPicList))
 .then(function(Imgdata) {
+    imgData = Imgdata
     loadFishGltf()
     .then(function(gltfData) {
         hideLoading();
