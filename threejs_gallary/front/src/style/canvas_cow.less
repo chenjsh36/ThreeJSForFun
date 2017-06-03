@@ -9,6 +9,7 @@ body {
     overflow: hidden;
 
     background-color: transparent;
+    background-color: black;
 }
 #webgl-container,
 .webgl-container {
@@ -22,17 +23,26 @@ body {
 
 #milkbox {
     position: absolute;
-    right: 26%;
-    bottom: 52px;
-
-    display: none;
+    right: 31%;
+    // bottom: 52px;
+    bottom: -160px;
+    // display: none;
     width: 30%;
     height: 158px;
 
     background: url(/threejs/static/img/milk/milk1.png);
     background-size: cover;
 }
-
+#cow-naz {
+    position: absolute;
+    right: 31%;
+    bottom: 196px;
+    width: 30%;
+    height: 200px;
+    display: none;
+    cursor: pointer;
+    // background-color: gray;
+}
 #milkink {
     position: absolute;
     right: 26%;
@@ -69,3 +79,4 @@ body {
     background: url(/threejs/static/img/fly.png);
     background-size: cover;
 }
+
