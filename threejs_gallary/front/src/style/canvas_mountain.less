@@ -10,11 +10,12 @@ body {
 
     background-color: transparent;
     background-color: black;
-    background-img: url('/threejs/static/img/mountainyun/吸云山_00014.png');
+    // background-img: url('/threejs/static/img/mountainyun/吸云山_00014.png');
     background-size: cover;
 }
 
 #cloud,
+#fade-cloud,
 #webgl-container,
 .webgl-container {
     position: absolute;
@@ -24,7 +25,10 @@ body {
     width: 100%;
     height: 100%;
 }
-
+#fade-cloud {
+    background-image: url('/threejs/static/img/上下云透明.png');
+    background-size: cover;
+}
 
 #water {
     position: absolute;
@@ -34,4 +38,16 @@ body {
     height: 100%;
     background-image: url('/threejs/static/img/water/合成 1_2_00000.png');
     background-size: cover;
+}
+
+#loading {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

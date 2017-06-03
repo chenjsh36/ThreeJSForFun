@@ -162,18 +162,21 @@ function render() {
     renderer.render( scene, camera );
 }
 
-// 瓶子飞出来
-function flyWater() {
+function getFlyWaterPicList() {
     var picPre = '/threejs/static/img/water/';
     var picNum = 26;
     var i = 0;
-    waterPicList = [];
+    var retList = [];
     for (; i < picNum; i++) {
-        waterPicList.push(picPre + '合成 1_2_00' + prefixInteger(i, 3) + '.png')
+        retList.push(picPre + '合成 1_2_00' + prefixInteger(i, 3) + '.png')
     }
+    return retList;
+}
+// 瓶子飞出来
+function flyWater() {
+    waterPicList = getFlyWaterPicList();
     console.log('waterPicList:', waterPicList);
     animateWaterPic();
-
 }
 
 // 播放瓶子成型动画
@@ -194,14 +197,18 @@ function animateWaterPic() {
 }
 
 // 吸云
-function flyCloud () {
+function getFlyCloudPicList() {
     var picPre = '/threejs/static/img/mountainyun/';
     var picNum = 53;
     var i = 0;
-    cloudPicList = [];
+    var retList = [];
     for (; i < picNum; i++) {
-        cloudPicList.push(picPre + '吸云山_00' + prefixInteger(i, 3) + '.png')
+        retList.push(picPre + '吸云山_00' + prefixInteger(i, 3) + '.png')
     }
+    return retList
+}
+function flyCloud () {
+    cloudPicList = getFlyCloudPicList();
     console.log('cloudPicList:', cloudPicList);
     animateCloudPic();
 }
@@ -223,17 +230,139 @@ function animateCloudPic() {
         flyWater();
     }
 }
+
+
+// 加载图片
+function preLoadImg(url) {
+    var def = $.Deferred();
+    var img = new Image();
+    img.src = url;
+    if (img.complete) {
+        def.resolve({
+            img: img,
+            url: url
+        })
+    }
+    img.onload = function() {
+        def.resolve({
+            img: img,
+            url: url
+        });
+    }
+    img.onerror = function() {
+        def.resolve({
+            img: null,
+            url: url
+        })
+    }
+    return def.promise();
+}
+
+// 加载单张图片
+function loadImage(url, callback) { 
+    var img = new Image(); //创建一个Image对象，实现图片的预下载 
+    img.src = url; 
+    if (img.complete) { // 如果图片已经存在于浏览器缓存，直接调用回调函数 
+        callback.call(img); 
+        return; // 直接返回，不用再处理onload事件 
+    } 
+    img.onload = function () { //图片下载完毕时异步调用callback函数。 
+        callback.call(img);//将回调函数的this替换为Image对象 
+    };
+}
+
+// 加载所有图片
+function loadAllImage(imgList) {
+    var defList = [];
+    var i = 0;
+    var len;
+    var def = $.Deferred();
+    for (i = 0, len = imgList.length; i < len; i++) {
+        defList[i] = preLoadImg(imgList[i])
+    }
+    $.when.apply(this, defList)
+    .then(function() {
+        var retData = Array.prototype.slice.apply(arguments);
+        def.resolve(retData);
+    })
+    return def.promise();
+}
+
+// 隐藏加载
+function hideLoading() {
+    $('#loading').hide();
+}
+
+// 3d模型def 加载
+function loadGltf(url) {
+    var def = $.Deferred();
+    var loader = new THREE.GLTFLoader();
+    loader.setCrossOrigin('https://ossgw.alicdn.com');
+    loader.load(url, function(data) {
+        def.resolve(data);
+    })
+    return def.promise();
+}
+
+// 加载所有3d模型
+function loadAllGltf(list) {
+    var defList = [];
+    var i = 0;
+    var len;
+    var def = $.Deferred();
+    for (i = 0, len = list.length; i < len; i++) {
+        defList[i] = loadGltf(list[i])
+    }
+    $.when.apply(this, defList)
+    .then(function() {
+        var retData = Array.prototype.slice.apply(arguments);
+        def.resolve(retData);
+    })
+    return def.promise();
+}
+
+// 加载两条鱼
+function loadFishGltf() {
+    var def = $.Deferred();
+    var fishurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/03807648cf70d99a7c1d3d634a2d4ea3.gltf';
+    var fishActiveurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/bb90ddfe2542267c142e892ab91f60ad.gltf';
+    var fishBowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/c5e934aae17373e927fe98aaf1f71767.gltf'
+
+    $.when(loadGltf(fishurl), loadGltf(fishActiveurl), loadGltf(fishBowUrl))
+    .then(function(fishData, fishActiveData, fishBowData) {
+        fishFile = fishData;
+        fishActiveFile = fishActiveData;
+        fishBowFile = fishBowData;
+        console.log('dont :', fishActiveFile);
+        def.resolve([fishurl, fishActiveurl, fishBowUrl]);
+    })
+    return def.promise();
+}
 // 函数定义---------------------------------
 
 // 开始-----------------------
-$water.one('click', function() {
-    $(webglContainer).hide();
-    $water.animate({
-        'top': '0%'
-    }, 500, function() {
-        flyCloud();
-    })
+var imgList = ['/threejs/static/img/上下云透明'];
+cloudPicList = getFlyCloudPicList();
+waterPicList = getFlyWaterPicList();
+
+loadAllImage(imgList.concat(cloudPicList, waterPicList))
+.then(function(imgData) {
+    hideLoading();
+    main();
 })
-init();
-animate();
+
+function main() {
+    $water.one('click', function() {
+        $(webglContainer).hide();
+        $('#fade-cloud').hide();
+        $water.animate({
+            'top': '0%'
+        }, 500, function() {
+            flyCloud();
+        })
+    })
+    init();
+    animate();    
+}
+
 // 开始-----------------------
