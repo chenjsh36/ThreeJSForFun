@@ -203,46 +203,54 @@ function init() {
             easing: 'linear',
             done: function() {
                 // console.log('catch fish!!!');
-                $fishCatcher2.show();
-                $fishCatcher.hide();
+                // $fishCatcher2.show();
+                // $fishCatcher.hide();
 
                 // 渔网到达鱼的位置开始摇晃
                 fishStatus = 'catch';
                 TWEEN.removeAll();
                 var left = new TWEEN.Tween(fishActive.position)
                     .to({
-                        x: -150
-                    }, 800)
+                        x: -250
+                    }, 200)
                 var leftToMiddle = new TWEEN.Tween(fishActive.position)
                     .to({
                         x: 0
-                    }, 700)
+                    }, 500)
+                var left2 = new TWEEN.Tween(fishActive.position)
+                    .to({
+                        x: -150
+                    }, 300)
+                var right2 = new TWEEN.Tween(fishActive.position)
+                    .to({
+                        x: 380
+                    }, 300)
                 var rightToMiddle = new TWEEN.Tween(fishActive.position)
                     .to({
                         x: 0
-                    }, 700)
+                    }, 500)
                 var right = new TWEEN.Tween(fishActive.position)
                     .to({
-                        x: 200
+                        x: 300
                     }, 800)
                 // leftToMiddle.chain(left);
                 // right.chain(leftToMiddle);
-                left.chain(leftToMiddle);
-                rightToMiddle.chain(left);
-                var circle = right.chain(rightToMiddle);
-                circle.onStart(function() {
-                        // setTimeout(showCatcherShade, 1000);
-                        // showCatcherShade();
-                    })
-                    .start();
+                // left.chain(leftToMiddle);
+                // rightToMiddle.chain(left);
+                // var circle = right.chain(rightToMiddle);
+                right2.chain(rightToMiddle);
+                left2.chain(right2);
+                leftToMiddle.chain(left2);
+                var circle = left.chain(leftToMiddle);
+                circle.start();
                 new TWEEN.Tween(this)
-                    .to({}, 3000 * 2)
+                    .to({}, 1000 * 2)
                     .onUpdate(function() {
                         render();
                     })
                     .start();
-                // setTimeout(showCatcherShade, 1300);
-                showCatcherShade();
+                // showCatcherShade();
+                showCatcherShade2();
             }
         });
     })
@@ -357,8 +365,8 @@ function showCatcherEnd() {
     // $fishCatcherLeft.removeClass('rotate');
     // $fishCatcherRight.removeClass('rotate');
     // 鱼状态改变
-    $fishCatcher.show();
-    $fishCatcher2.hide();
+    // $fishCatcher.show();
+    // $fishCatcher2.hide();
     fishStatus = 'die';
     TWEEN.removeAll();
     new TWEEN.Tween(fish.rotation)
@@ -549,6 +557,44 @@ function showCatcherShade() {
         showCatcherEnd();
     }
 }
+
+function showCatcherShade2() {
+    // http://api.jquery.com/animate/
+    // $(".test").animate({ whyNotToUseANonExistingProperty: 100 }, {
+    //     step: function(now,fx) {
+    //         $(this).css('-webkit-transform',"translate3d(0px, " + now + "px, 0px)");
+    //     },
+    //     duration:'slow'
+    // },'linear');
+    catcherRotate(25, 200, 'swing')
+    .then(catcherRotate(0, 500, 'linear'))
+    .then(catcherRotate(15, 300, 'linear'))
+    .then(catcherRotate(-20, 300, 'linear'))
+    .then(catcherRotate(0, 500, 'linear', showCatcherEnd));
+}
+
+function catcherRotate(deg, time, easing, cb) {
+    var def = $.Deferred();
+    $fishCatcher.animate({ asdfasdf: deg }, {
+        step: function(now, fx) {
+
+            $(this).css('-webkit-transform',"translate(-50%, 0%) scale(1, 1) rotateZ(" + now + "deg)");
+            $(this).css('transform',"translate(-50%, 0%) scale(1, 1) rotateZ(" + now + "deg)");
+        },
+        duration: time,
+        easing: easing,
+        done: function() {
+            if (cb) {
+                cb();
+            }
+            def.resolve();
+        }
+    })
+    return def.promise();
+}
+
+
+
 // 船动画
 
 function showShipFly() {
@@ -617,7 +663,8 @@ function main() {
     bubble2.start();
     bubble3.start();
     /* 气泡 */
-    showShipFly();
+    // showShipFly();
+    $ship.animate({left: '100%'}, 4000);
     init();
     animate();
 }
