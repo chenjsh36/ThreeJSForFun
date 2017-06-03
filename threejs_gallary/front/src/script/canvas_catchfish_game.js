@@ -36,10 +36,23 @@ var fishStatus = 'swim'; // ['swim', 'catch', 'die'];
 var fishBow;
 var fishBowMixer;
 
+// 鱼竿摇晃变量
+var catcherTimeHandle;
+var catcherPicList = [];
+var catcherPicCur = 0;
+var catcherReady = true;
+
+// 船动画
+var shipTimeHandle;
+var shipPicCur = 9;
+var shipPicList = [];
+var $ship = $('#ship');
+
 // GLTF 文件数据
 var fishFile;
 var fishActiveFile;
 var fishBowFile;
+var $fishCatcher2 = $('#fish-catcher2');
 
 var clock = new THREE.Clock();
 var canvasContainer = document.getElementById('webgl-container');
@@ -104,6 +117,7 @@ function init() {
 
 
     // 游动的鱼
+    scalePoint = .9;
     fish = fishFile.scene;
     fish.position.set(0, 0, -280);
     fish.rotation.z = -Math.PI / 16;
@@ -117,7 +131,7 @@ function init() {
         }    
     }
     scene.add( fish );
-
+    // showSwimFish()
 
     // 托盘
     fishBow = fishBowFile.scene;
@@ -158,76 +172,117 @@ function init() {
     
     $fishHider.on('click', function() {
         $fishHider.hide();
+        $fishCatcher.removeClass('ready');
         if (ifFishCatcherActive === true) return;
         ifFishCatcherActive = true;
-        $fishCatcher.animate({bottom: '0%'}, 300, 'swing', function() {
-            // 渔网到达鱼的位置开始摇晃
-            fishStatus = 'catch';
-            $fishCatcher.addClass('rotate');
-            $fishCatcherLeft.addClass('rotate');
-            $fishCatcherRight.addClass('rotate');
-            TWEEN.removeAll();
-            var left = new TWEEN.Tween(fishActive.position)
-                .to({
-                    x: -300
-                }, 300)
-            var right = new TWEEN.Tween(fishActive.position)
-                .to({
-                    x: 300
-                }, 300)
-            var circle = right.chain(left);
-            circle.repeat(6)
-                .start();
-            new TWEEN.Tween(this)
-                .to({}, 1000 * 2)
-                .onUpdate(function() {
-                    render();
+        // http://api.jquery.com/animate/
+        // $(".test").animate({ whyNotToUseANonExistingProperty: 100 }, {
+        //     step: function(now,fx) {
+        //         $(this).css('-webkit-transform',"translate3d(0px, " + now + "px, 0px)");
+        //     },
+        //     duration:'slow'
+        // },'linear');
+
+        $fishCatcher.animate({
+            bottom: '0%',
+        }, {
+            step: function(now, fx) {
+                var begin = 62;
+                var end = 0;
+                var percent = 1 - (-62 - now) / -62;
+                var sub = 0.2 * percent;
+                var cur = 1 + sub;
+                $(this).css({
+                    '-webkit-transform': 'translate(-50%, 0%) scale(' + cur + ', ' + cur + ')',
+                    'transform': 'translate(-50%, 0%) scale(' + cur + ', ' + cur + ')'
                 })
-                .start();
-            // 一段时间后放下渔网 
-            setTimeout(function() {
-                // 停止摇晃渔网
-                $fishCatcher.removeClass('rotate');
-                $fishCatcherLeft.removeClass('rotate');
-                $fishCatcherRight.removeClass('rotate');
-                // 鱼状态改变
-                fishStatus = 'die';
+            },
+            duration: 200,
+            easing: 'linear',
+            complete: function() {
+                // console.log('catch fish!!!');
+                $fishCatcher2.show();
+                $fishCatcher.hide();
+
+                // 渔网到达鱼的位置开始摇晃
+                fishStatus = 'catch';
                 TWEEN.removeAll();
-                new TWEEN.Tween(fish.rotation)
+                var left = new TWEEN.Tween(fishActive.position)
                     .to({
-                        x: Math.PI / 4
-                    }, 1000)
-                    .easing(TWEEN.Easing.Exponential.InOut)
-                    .start();
-                new TWEEN.Tween(fishBow.position)
+                        x: -150
+                    }, 500)
+                var leftToMiddle = new TWEEN.Tween(fishActive.position)
                     .to({
-                        y:-310 
-                    }, 1000)
-                    .easing(TWEEN.Easing.Exponential.InOut)
+                        x: 0.1
+                    }, 500)
+                var rightToMiddle = new TWEEN.Tween(fishActive.position)
+                    .to({
+                        x: 0.1
+                    }, 500)
+                var right = new TWEEN.Tween(fishActive.position)
+                    .to({
+                        x: 200
+                    }, 500)
+                leftToMiddle.chain(left);
+                right.chain(leftToMiddle);
+                var circle = rightToMiddle.chain(right);
+                circle.repeat(1)
+                    .onStart(function() {
+                        showCatcherShade();
+                    })
                     .start();
                 new TWEEN.Tween(this)
-                    .to({}, 1000 * 2)
+                    .to({}, 2000 * 2)
                     .onUpdate(function() {
                         render();
                     })
                     .start();
-                // 气泡和背景鱼群消失
-                $('#fishtank').animate({opacity: 0}, 300);
-                $('#bubbles').animate({opacity: 0}, 300, function() {
-                    bubble1.stop();
-                })
-                $('#bubbles').animate({opacity: 0}, 300, function() {
-                    bubble2.stop();
-                })
-                $('#bubbles').animate({opacity: 0}, 300, function() {
-                    bubble3.stop();
-                })
-                $fishCatcher.animate({bottom: '-100%'}, 300, 'swing', function() {
-                    ifFishCatcherActive = false;
-                })
-            }, 2000)
+            
+                // showCatcherShade();
+            }
         });
     })
+}
+
+function showSwimFish() {
+    var top = new TWEEN.Tween({i: 0})
+        .to({
+            i: 40
+        }, 1000)
+        .onUpdate(function() {
+            fish.position.y = this.i;
+        })
+        .easing(TWEEN.Easing.Exponential.InOut)
+    var bottom = new TWEEN.Tween({i: 0})
+        .to({
+            i: 40
+        }, 1000)
+        .onUpdate(function() {
+            fish.position.y = -this.i;
+        })
+        .easing(TWEEN.Easing.Exponential.InOut)
+    var left = new TWEEN.Tween({i: 0})
+        .to({
+            i: 40
+        }, 1000)
+        .onUpdate(function() {
+            fish.position.x = -this.i;
+        })
+        .easing(TWEEN.Easing.Exponential.InOut)
+    var right = new TWEEN.Tween({i: 0})
+        .to({
+            i: 40
+        }, 1000)
+        .onUpdate(function() {
+            fish.position.x = this.i;
+        })
+        .easing(TWEEN.Easing.Exponential.InOut)
+    // var tmp;
+    top.chain(right);
+    // left.chain(top);
+    // bottom.chain(left);
+    top.repeat(100)
+        .start();
 }
 
 function animate() {
@@ -269,6 +324,52 @@ function animate() {
 function render() {
     renderer.render( scene, camera );
 }
+
+// 捕鱼结束 鱼竿下落 鱼掉下 托盘上升
+function showCatcherEnd() {
+    // 停止摇晃渔网
+    // $fishCatcher.removeClass('rotate');
+    // $fishCatcherLeft.removeClass('rotate');
+    // $fishCatcherRight.removeClass('rotate');
+    // 鱼状态改变
+    $fishCatcher.show();
+    $fishCatcher2.hide();
+    fishStatus = 'die';
+    TWEEN.removeAll();
+    new TWEEN.Tween(fish.rotation)
+        .to({
+            x: Math.PI / 5
+        }, 1000)
+        .easing(TWEEN.Easing.Exponential.InOut)
+        .start();
+    new TWEEN.Tween(fishBow.position)
+        .to({
+            y: -200 
+        }, 1000)
+        .easing(TWEEN.Easing.Exponential.InOut)
+        .start();
+    new TWEEN.Tween(this)
+        .to({}, 1000 * 2)
+        .onUpdate(function() {
+            render();
+        })
+        .start();
+    // 气泡和背景鱼群消失
+    $('#fishtank').animate({opacity: 0}, 300);
+    $('#bubbles').animate({opacity: 0}, 300, function() {
+        bubble1.stop();
+    })
+    $('#bubbles').animate({opacity: 0}, 300, function() {
+        bubble2.stop();
+    })
+    $('#bubbles').animate({opacity: 0}, 300, function() {
+        bubble3.stop();
+    })
+    $fishCatcher.animate({bottom: '-100%'}, 300, 'swing', function() {
+        ifFishCatcherActive = false;
+    })
+}
+
 
 // 加载图片
 function preLoadImg(url) {
@@ -362,8 +463,10 @@ function loadAllGltf(list) {
 // 加载两条鱼
 function loadFishGltf() {
     var def = $.Deferred();
-    var fishurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/03807648cf70d99a7c1d3d634a2d4ea3.gltf';
-    var fishActiveurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/bb90ddfe2542267c142e892ab91f60ad.gltf';
+    // var fishurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/03807648cf70d99a7c1d3d634a2d4ea3.gltf';
+    // var fishActiveurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/bb90ddfe2542267c142e892ab91f60ad.gltf';
+    var fishurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/b6dd694e5a9945e4f7c16867e9909f3c.gltf';
+    var fishActiveurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/645064d03c9be7cfa980c76886dbddba.gltf';
     var fishBowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/c5e934aae17373e927fe98aaf1f71767.gltf'
 
     $.when(loadGltf(fishurl), loadGltf(fishActiveurl), loadGltf(fishBowUrl))
@@ -371,10 +474,73 @@ function loadFishGltf() {
         fishFile = fishData;
         fishActiveFile = fishActiveData;
         fishBowFile = fishBowData;
-        console.log('dont :', fishActiveFile);
         def.resolve([fishurl, fishActiveurl, fishBowUrl]);
     })
     return def.promise();
+}
+
+// 补零
+function prefixInteger(num, n) {
+    return (Array(n).join(0) + num).slice(-n);
+}
+// 获取鱼竿摇摆的动画数组
+function getFlyCatcherPicList() {
+    var picPre = '/threejs/static/img/yuwang/';
+    var picNum = 75;
+    var i = 0;
+    var retList = [];
+    for (; i < picNum; i++) {
+        retList.push(picPre + 'YW0' + prefixInteger(i, 3) + '.png')
+    }
+    return retList;
+}
+
+// 获取船的动画数组
+function getFlyShipPicList() {
+    var picPre = '/threejs/static/img/ship/';
+    var picNum = 72;
+    var i = 9;
+    var retList = [];
+    for (; i < picNum; i++) {
+        retList.push(picPre + 'chuan0' + prefixInteger(i, 3) + '.png')
+    }
+    return retList;
+}
+
+// 鱼竿摇晃动画
+function showCatcherShade() {
+    var url = '';
+    clearTimeout(catcherTimeHandle);
+    if (catcherPicCur < catcherPicList.length) {
+        url = 'url("' + catcherPicList[catcherPicCur] + '")';
+
+        // console.log('showCatcherShade:', url);
+        $fishCatcher2.css('background-image', url);
+        // $fishCatcher2.css('background-size','cover');
+        catcherPicCur++;
+        catcherTimeHandle = setTimeout(showCatcherShade, 2000 / 76);
+    } else {
+        catcherPicCur = 0;
+        showCatcherEnd();
+    }
+}
+// 船动画
+
+function showShipFly() {
+    var url = '';
+    clearTimeout(shipTimeHandle);
+    if (shipPicCur < shipPicList.length) {
+        url = 'url("' + shipPicList[shipPicCur] + '")';
+
+        // console.log('showShipFly:', url);
+        $ship.css('background-image', url);
+        // $ship.css('background-size','cover');
+        shipPicCur++;
+        shipTimeHandle = setTimeout(showShipFly, 5000 / 72);
+    } else {
+        shipPicCur = 9;
+        // showCatcherEnd();
+    }
 }
 // 函数定义-------------------------------------------
 
@@ -386,8 +552,9 @@ var waitImgList = [
     '/threejs/static/img/canvas_yuwang2.png',
     '/threejs/static/img/canvas_yuwang3.png'
 ];
-
-loadAllImage(waitImgList)
+catcherPicList = getFlyCatcherPicList();
+shipPicList = getFlyShipPicList();
+loadAllImage(waitImgList.concat(catcherPicList, shipPicList))
 .then(function(Imgdata) {
     loadFishGltf()
     .then(function(gltfData) {
@@ -419,12 +586,11 @@ function main() {
         sourcex: 30,
         sourcey: winsize.height / 3
     })
-
     bubble1.start();
     bubble2.start();
     bubble3.start();
     /* 气泡 */
-
+    showShipFly();
     init();
     animate();
 }

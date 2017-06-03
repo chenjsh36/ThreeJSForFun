@@ -6,13 +6,14 @@ body,html {
 }
 body {
     // background-color: #59568f;    
-    background: url('/threejs/static/img/canvas_ship.png') repeat-x;
+    // background: url('/threejs/static/img/canvas_ship.png') repeat-x;
     // background-size: auto 100%;
 
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, .99);
     overflow: hidden;
 
-    animation: animatedBackground 10s linear;
+    // animation: animatedBackground 10s linear;
+    // animation-iteration-count: 1;
 }
 
 #webgl-container,
@@ -37,20 +38,41 @@ body {
     transform-origin: 50% bottom;
     opacity: 0;
 }
+
+
+#fish-catcher2 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 0%);
+    background-image: url('/threejs/static/img/yuwang/YW0000.png');
+    // background-size: 100% auto;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: none;
+}
+
 #fish-catcher {
     position: absolute;
-    width: 90%;
-    height: 70%;
-    background-color: blue;
+    width: 100%;
+    height: 100%;
     left: 50%;
-    bottom: -43%;
-    transform: translate(-50%, 0%);
-    background: url('/threejs/static/img/canvas_yuwang1.png') no-repeat;
-    background-size: 100% auto;
+    bottom: -62%;
+    transform: translate(-50%, 0%) scale(1.2, 1.2);
+    background-image: url('/threejs/static/img/yuwang/YW0000.png');
+    // background: url('/threejs/static/img/canvas_yuwang1.png') no-repeat;
+    // background-size: 100% auto;
+    background-size: cover;
+    background-repeat: no-repeat;
     transform-origin: 50% bottom;
     &.rotate {
         animation: music-move .5s 0s infinite alternate ease-in-out;
 
+    }
+    &.ready {
+        animation: ready 10s 0s infinite alternate linear;
     }
 }
 #fish-catcher-right {
@@ -100,6 +122,14 @@ body {
     justify-content: center;
 }
 
+#ship {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
 @keyframes music-move {
     0% { 
         // -webkit-transform: rotate(0deg);
@@ -130,6 +160,53 @@ body {
     }
     100% {  
         opacity: .1;
+    }
+}
+
+@keyframes ready {
+    0% {
+        left: 50%;
+        bottom: -62%;
+    } 
+    10% {
+        left: 52%;
+        bottom: -60%;
+    }
+    20% {  
+        left: 53%;
+        bottom: -60%;
+    }
+    30% {  
+        left: 53%;
+        bottom: -59%;
+    }
+    40% {  
+        left: 52%;
+        bottom: -58%;
+    }
+    50% {  
+        left: 50%;
+        bottom: -57%;
+    }
+    60% {  
+        left: 49%;
+        bottom: -58%;
+    }
+    70% {  
+        left: 47%;
+        bottom: -59%;
+    }
+    80% {  
+        left: 46%;
+        bottom: -60%;
+    }
+    90% {  
+        left: 47%;
+        bottom: -63%;
+    }
+    100% {  
+        left: 50%;
+        bottom: -62%;
     }
 }
 

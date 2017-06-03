@@ -16,6 +16,10 @@ var webglContainer = document.getElementById('webgl-container');
 var door;
 var doorMixer;
 
+
+var doorBorder;
+var doorContent;
+
 var band;
 var basket;
 
@@ -141,8 +145,10 @@ function init() {
     var douurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/0ca2926cbf4bc664ff00b03c1a5d1f66.gltf'
     var fishurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/03807648cf70d99a7c1d3d634a2d4ea3.gltf';
     var fishActiveurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/bb90ddfe2542267c142e892ab91f60ad.gltf';
-    var fishBowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/c5e934aae17373e927fe98aaf1f71767.gltf'
-    
+    var fishBowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/c5e934aae17373e927fe98aaf1f71767.gltf';
+    var doorBorderUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/c4e339e56660a4e457834c46ac4b053e.gltf';
+    var doorContentUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/d3c2877b7132cfa556dd6826df97997d.gltf';
+
     // shanurl
     loader.load(doorurl, function(data) {
         var scalePoint = 1;
@@ -165,7 +171,7 @@ function init() {
         }
         window.gdoor = door;
         window.gdoorMixer = doorMixer;
-        scene.add(door);
+        // scene.add(door);
     })
 
     loader.load(daiurl, function(data) {
@@ -220,6 +226,34 @@ function init() {
 
     })
 
+    // 门框
+    loader.load(doorBorderUrl, function(data) {
+        var scalePoint = 1;
+        var animations;
+        var animation;
+
+        gltf = data;
+        doorBorder = gltf.scene;
+        doorBorder.position.set(0, 420, 0);
+        doorBorder.scale.set(scalePoint, scalePoint, scalePoint);
+
+        scene.add(doorBorder);
+    })
+    // 门内容
+    loader.load(doorContentUrl, function(data) {
+        var scalePoint = 1;
+        var animations;
+        var animation;
+
+        gltf = data;
+        doorContent = gltf.scene;
+        doorContent.position.set(0, 420, 0);
+        doorContent.scale.set(scalePoint, scalePoint, scalePoint);
+
+        scene.add(doorContent);
+        openDoor();
+    })
+
     //- 环境灯
     ambientLight = new THREE.AmbientLight(0xffffff);
     scene.add(ambientLight);
@@ -242,6 +276,18 @@ function init() {
     controls.target = new THREE.Vector3(0,15,0);
     //- controls.maxPolarAngle = Math.PI / 2;
     //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
+}
+
+function openDoor() {
+    console.log('openDoor');
+    TWEEN.removeAll();
+    new TWEEN.Tween(doorContent.rotation)
+        .to({y: -Math.PI / 2}, 1000)
+        .onUpdate(function() {
+            console.log('update:', this.y);
+            render();
+        })
+        .start();
 }
 
 function animate() {

@@ -175,7 +175,7 @@ function getFlyWaterPicList() {
 // 瓶子飞出来
 function flyWater() {
     waterPicList = getFlyWaterPicList();
-    console.log('waterPicList:', waterPicList);
+    // console.log('waterPicList:', waterPicList);
     animateWaterPic();
 }
 
@@ -186,7 +186,7 @@ function animateWaterPic() {
     if (waterPicCur < waterPicList.length) {
         url = 'url("' + waterPicList[waterPicCur] + '")';
 
-        console.log('animateWaterPic:', url);
+        // console.log('animateWaterPic:', url);
         $water.css('background-image', url);
         // $water.css('background-size','cover');
         waterPicCur++;
@@ -209,7 +209,7 @@ function getFlyCloudPicList() {
 }
 function flyCloud () {
     cloudPicList = getFlyCloudPicList();
-    console.log('cloudPicList:', cloudPicList);
+    // console.log('cloudPicList:', cloudPicList);
     animateCloudPic();
 }
 // 播放吸云动画
@@ -220,7 +220,7 @@ function animateCloudPic() {
     if (cloudPicCur < len) {
         url = 'url("' + cloudPicList[cloudPicCur] + '")';
 
-        console.log('animateCloudPic:', url);
+        // console.log('animateCloudPic:', url);
         $cloud.css('background', url);
         $cloud.css('background-size','cover');
         cloudPicCur++;
@@ -333,7 +333,7 @@ function loadFishGltf() {
         fishFile = fishData;
         fishActiveFile = fishActiveData;
         fishBowFile = fishBowData;
-        console.log('dont :', fishActiveFile);
+        // console.log('dont :', fishActiveFile);
         def.resolve([fishurl, fishActiveurl, fishBowUrl]);
     })
     return def.promise();

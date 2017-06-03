@@ -185,7 +185,7 @@ function init() {
         if (milkBoxLoading === true) return;
         milkBoxLoading = true;
         milkBoxStatus++;
-        console.log('click milk', milkBoxStatus);
+        // console.log('click milk', milkBoxStatus);
         addMilk();
 
     })
@@ -306,7 +306,7 @@ function init() {
         var j = 2;
         var maxi = milkBoxStatus * 16 + 1
         var getMilk = function() {
-            console.log('getMilk');
+            // console.log('getMilk');
             if (i < maxi) {
                 url = 'url(/threejs/static/img/milk/milk' + i + '.png)';
                 $milkBox.css('background',url);
