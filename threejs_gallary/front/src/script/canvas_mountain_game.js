@@ -15,6 +15,8 @@ var webglContainer = document.getElementById('webgl-container');
 
 var moutain;
 
+var hillFile;
+
 var $water = $('#water');
 var waterTimeHandle;
 var waterPicList = [];
@@ -24,6 +26,8 @@ var $cloud = $('#cloud');
 var cloudTimeHandle;
 var cloudPicList = [];
 var cloudPicCur = 0;
+
+var $fadeCloud = $('#fade-cloud');
 
 // 变量定义---------------------------------
 
@@ -52,6 +56,9 @@ function loadImage(url, callback) {
     }; 
 }; 
 function init() {
+    var scalePoint = 1;
+    var animations;
+    var animation;
 
     //- 创建场景
     scene = new THREE.Scene();
@@ -99,29 +106,26 @@ function init() {
     var fishBowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/c5e934aae17373e927fe98aaf1f71767.gltf'
     
     // shanurl
-    loader.load(shanurl, function(data) {
-        var scalePoint = 1;
-        var animations;
-        var animation;
+    // loader.load(shanurl, function(data) {
+    //     var scalePoint = 1;
+    //     var animations;
+    //     var animation;
 
-        gltf = data;
-        moutain = gltf.scene;
-        moutain.position.set(0, 0, 0);
-        moutain.scale.set(scalePoint, scalePoint, scalePoint);
+    //     gltf = data;
+    //     moutain = gltf.scene;
+    //     moutain.position.set(0, 0, 0);
+    //     moutain.scale.set(scalePoint, scalePoint, scalePoint);
         
-        moutain.rotation.y = -Math.PI / 4;
-        // animations = data.animations;
-        // if (animations && animations.length) {
-        //     cowMixer = new THREE.AnimationMixer(cow);
-        //     for (var i = 0; i < animations.length; i++) {
-        //         var animation = animations[i];
-        //         cowMixer.clipAction(animation).play();    
-        //     }
-        // }
-        scene.add(moutain);
-    })
+    //     moutain.rotation.y = -Math.PI / 4;
+    //     scene.add(moutain);
+    // })
 
-
+    moutain = hillFile.scene;
+    moutain.position.set(0, 0, 0);
+    moutain.scale.set(scalePoint, scalePoint, scalePoint);
+    moutain.rotation.y = -Math.PI / 4;
+    scene.add(moutain);
+    window.moutains = moutain;
     //- 环境灯
     ambientLight = new THREE.AmbientLight(0xffffff);
     scene.add(ambientLight);
@@ -321,44 +325,65 @@ function loadAllGltf(list) {
     return def.promise();
 }
 
-// 加载两条鱼
-function loadFishGltf() {
+// 加载雪山
+function loadHillGltf() {
     var def = $.Deferred();
-    var fishurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/03807648cf70d99a7c1d3d634a2d4ea3.gltf';
-    var fishActiveurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/bb90ddfe2542267c142e892ab91f60ad.gltf';
-    var fishBowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/c5e934aae17373e927fe98aaf1f71767.gltf'
-
-    $.when(loadGltf(fishurl), loadGltf(fishActiveurl), loadGltf(fishBowUrl))
-    .then(function(fishData, fishActiveData, fishBowData) {
-        fishFile = fishData;
-        fishActiveFile = fishActiveData;
-        fishBowFile = fishBowData;
-        // console.log('dont :', fishActiveFile);
-        def.resolve([fishurl, fishActiveurl, fishBowUrl]);
+    var shanurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/51ff6704e19375613c3d4d3563348b7f.gltf';
+    $.when(loadGltf(shanurl))
+    .then(function(hillData) {
+        hillFile = hillData;
+        def.resolve([shanurl]);
     })
     return def.promise();
+}
+
+// 将雪山和云一起缩小
+function scaleHill() {
+    $fadeCloud.addClass('scale');
+    new TWEEN.Tween({scale: 1})
+        .to({scale: .05}, 5000)
+        .easing(TWEEN.Easing.Quartic.In)
+        .onUpdate(function() {
+            var s = this.scale;
+            moutain.scale.set(s, s, s);
+        })
+        .onComplete(function() {
+            flyWater();
+            becomeTag();
+        })
+        .start();
+}
+function becomeTag() {
+    $(webglContainer).fadeOut();
+    $fadeCloud.fadeOut();
 }
 // 函数定义---------------------------------
 
 // 开始-----------------------
-var imgList = ['/threejs/static/img/上下云透明'];
+var imgList = ['/threejs/static/img/上下云透明.png'];
 cloudPicList = getFlyCloudPicList();
 waterPicList = getFlyWaterPicList();
 
 loadAllImage(imgList.concat(cloudPicList, waterPicList))
 .then(function(imgData) {
-    hideLoading();
-    main();
+    loadHillGltf()
+    .then(function(gltfdata) {
+        hideLoading();
+        main();        
+    })
 })
 
 function main() {
     $water.one('click', function() {
-        $(webglContainer).hide();
-        $('#fade-cloud').hide();
+        // $(webglContainer).hide();
+        // $('#fade-cloud').hide();
+        $water.removeClass('ready');
         $water.animate({
             'top': '0%'
         }, 500, function() {
-            flyCloud();
+            console.log('scale');
+            // flyCloud();
+            scaleHill();
         })
     })
     init();
