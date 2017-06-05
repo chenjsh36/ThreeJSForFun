@@ -203,8 +203,8 @@ function init() {
     var threeexResize = new THREEex.WindowResize(renderer, camera);
 
     //- threejs 的控制器
-    // var controls = new THREE.OrbitControls( camera, renderer.domElement );
-    // controls.target = new THREE.Vector3(0,15,0);
+    var controls = new THREE.OrbitControls( camera, renderer.domElement );
+    controls.target = new THREE.Vector3(0,15,0);
     //- controls.maxPolarAngle = Math.PI / 2;
     //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
 
@@ -248,7 +248,7 @@ function init() {
                 x: -250
             }, 3500)
             .onComplete(function() {
-                cowStatus = 'standing'
+                // cowStatus = 'standing'
             })
             .delay(2000);
         var downCamera = new TWEEN.Tween(camera.position)
