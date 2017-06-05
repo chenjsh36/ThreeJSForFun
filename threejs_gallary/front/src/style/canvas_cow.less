@@ -12,6 +12,15 @@ body {
     background-color: black;
     overflow: hidden;
 }
+#game-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    overflow: hidden;
+}
+
 #webgl-container,
 .webgl-container {
     position: absolute;
@@ -22,18 +31,36 @@ body {
     height: 100%;
 }
 
-#milkbox {
+// 奶瓶
+.milkbox {
     position: absolute;
-    right: 31%;
-    // bottom: 52px;
-    bottom: -160px;
+    // right: 31%;
+    // bottom: -160px;
     // display: none;
-    width: 30%;
-    height: 158px;
-
-    background: url(/threejs/static/img/milk/milk1.png);
-    background-size: cover;
+    width: 225px; // 750 * 366 / 1220
+    height: 366px;
+    bottom: -366px;
+    left: 50%;
+    margin-left: -95px; // 225 / 2 再向右偏移对准
+    // background: url(/threejs/static/img/canvas_milk1.png);
+    background-size: auto 100%;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    opacity: 1;
+    &.hide {
+        opacity: 0;
+    }
 }
+#milkbox1 {
+    background-image: url(/threejs/static/img/canvas_milk1.png);
+}
+#milkbox2 {
+    background-image: url(/threejs/static/img/canvas_milk2.png);
+}
+#milkbox3 {
+    background-image: url(/threejs/static/img/canvas_milk3.png);
+}
+
 #cow-naz {
     position: absolute;
     right: 31%;

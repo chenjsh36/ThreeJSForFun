@@ -1,4 +1,4 @@
-var frameAnimation = {
+window.frameAnimation = {
     anims: (function() {
 
         /**
@@ -8,17 +8,18 @@ var frameAnimation = {
          * eachime duration (秒)
          * times： 循环次数 0是无限循环
          */
-        return function(obj, width, steps, eachtime, times, callback) {
+        return function(obj, width, steps, eachtime, times, callback, beginStep) {
             var runing = false;
             var handler = null;
-            var step = 0;
+            var begin = beginStep ? beginStep : 0;
+            var step = begin;
             var time = 0;
             var speed = eachtime * 1000 / steps;
             var oneStepWidth = width / steps;
             var control;
             function _play() {
                 if (step >= steps) {
-                    step = 0;
+                    step = begin;
                     time++;
                 }
                 if (times === 0 || time < times) {
@@ -35,7 +36,7 @@ var frameAnimation = {
                 start: function() {
                     if (!runing) {
                         runing = true;
-                        step = time = 0;
+                        step = time = begin;
                         handler = setInterval(_play, speed);
                     }
                     return this;
@@ -49,7 +50,7 @@ var frameAnimation = {
                         }
                         if (restart) {
                             obj.css('background-position', '0 0');
-                            step = 0;
+                            step = begin;
                             time = 0;
                         }
                     }
@@ -63,11 +64,6 @@ var frameAnimation = {
         }
     })(window)
 }
-
-export default {
-    frameAnimation
-}
-
 /*
 example
 
