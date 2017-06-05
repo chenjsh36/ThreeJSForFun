@@ -1,0 +1,139 @@
+body,
+html {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+body {
+    overflow: hidden;
+
+    background-color: transparent;
+    background-color: black;
+    // background-img: url('/threejs/static/img/mountainyun/吸云山_00014.png');
+    background-size: cover;
+}
+
+#cloud,
+#fade-cloud,
+#webgl-container,
+.webgl-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+}
+#webgl-container {
+    will-change: transform;
+    // transition: .5s all ease-in;
+    transition: 5s all ease-in;   
+    // &.scale {
+    //     transform: scale(.05, .05);
+    // }
+}
+
+#fade-cloud {
+    background-image: url('/threejs/static/img/上下云透明.png');
+    background-size: cover;
+    will-change: transform;
+    // transition: .5s all ease-in;
+    transition: 5s all ease-in;
+    &.scale {
+        transform: scale(.05, .05);
+    }
+}
+
+#water {
+    position: absolute;
+    left: 0;
+    top: 33%;
+    width: 100%;
+    height: 100%;
+    background-image: url('/threejs/static/img/water/合成 1_2_00000.png');
+    background-size: cover;
+    will-change: transform;
+
+    &.ready {
+        animation: ready 10s 0s infinite alternate linear;
+    }
+}
+
+#loading {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#animal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 120px;
+    width: 120px;
+}
+
+@keyframes ready {
+    0% {
+        // left: 50%;
+        // bottom: -62%;
+        transform: translate(0, 0);
+    } 
+    10% {
+        // left: 52%;
+        // bottom: -60%;
+        transform: translate(2%, 2%);
+    }
+    20% {
+        // left: 53%;
+        // bottom: -60%;
+        transform: translate(3%, 2%);
+    }
+    30% {  
+        // left: 53%;
+        // bottom: -59%;
+        transform: translate(3%, 3%);
+    }
+    40% {  
+        // left: 52%;
+        // bottom: -58%;
+        transform: translate(2%, 4%);
+    }
+    50% {  
+        // left: 50%;
+        // bottom: -57%;
+        transform: translate(0, 5%);
+    }
+    60% {  
+        // left: 49%;
+        // bottom: -58%;
+        transform: translate(-1%, 4%);
+    }
+    70% {  
+        // left: 47%;
+        // bottom: -59%;
+        transform: translate(-3%, 3%);
+    }
+    80% {  
+        // left: 46%;
+        // bottom: -60%;
+        transform: translate(-4%, 2%);
+    }
+    90% {  
+        // left: 47%;
+        // bottom: -63%;
+        transform: translate(-3%, -1%);
+    }
+    100% {  
+        // left: 50%;
+        // bottom: -62%;
+        transform: translate(0, 0);
+    }
+}

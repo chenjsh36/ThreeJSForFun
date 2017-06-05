@@ -1,0 +1,69 @@
+body,
+html {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+body {
+    overflow: hidden;
+
+    background-color: black;
+    // background-color: black;
+    background-size: cover;
+}
+
+#webgl-container,
+.webgl-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+}
+
+#nuts {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    .nut {
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        // background-color: green;
+        
+        &:nth-of-type(1) {
+            bottom: 52px;
+            left: 95px;
+            height: 78px;
+            width: 61px;
+        }
+        &:nth-of-type(2) {
+            bottom: 118px;
+            left: 37px;
+            height: 95px;
+            width: 65px;
+        }
+        &:nth-of-type(3) {
+            bottom: 131px;
+            height: 66px;
+            width: 65px;
+            right: 103px;
+        }
+        &:nth-of-type(4) {
+            bottom: 131px;
+            height: 66px;
+            width: 65px;
+            right: 29px;
+        }
+        &:nth-of-type(5) {
+            bottom: 44px;
+            height: 78px;
+            width: 75px;
+            right: 76px;
+        }
+    }
+}

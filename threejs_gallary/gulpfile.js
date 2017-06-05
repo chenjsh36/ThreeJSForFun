@@ -72,11 +72,7 @@ gulp.task('module', function() {
 
 gulp.task('img', function() {
     gulp.src(path.img.src)
-        .pipe(plumber())
-        .pipe(gwatch(path.img.dist))
         .pipe(gulp.dest(path.img.dist))
-        .pipe(reload({stream: true}))
-        .pipe(notify({message: 'Img task complete'}))
         ;
 })
 
@@ -152,7 +148,7 @@ gulp.task('watch', function(err){
   gwatch(root.src + '/**', function(event) {
     // console.log(event.name, event.verbose, event.base, event)
     if (event.event === 'unlink') {
-      runsequence('clean',['view', 'browserify_coffee', 'less', 'img']);
+      runsequence('clean',['view', 'browserify_coffee', 'less']);
     }
   });
   // 由于使用了browserify，一个文件的改变会影响所有其它引用到他的文件，所以应该重新编译
