@@ -152,7 +152,7 @@ function init() {
 
 function animate() {
     requestAnimationFrame(animate);
-    camera.lookAt(scene.position);
+    // camera.lookAt(scene.position);
     // console.log(camera.rotation, camera.position);
 
     TWEEN.update();
@@ -353,11 +353,11 @@ function loadHillGltf() {
     return def.promise();
 }
 
-// 将雪山和云一起缩小
+// 先缩小到被底部云遮盖
 function scaleHill() {
     // $fadeCloud.addClass('scale');
     new TWEEN.Tween({scale: 1})
-        .to({scale: .4}, 3000)
+        .to({scale: .4}, 2000)
         .easing(TWEEN.Easing.Quartic.In)
         .onUpdate(function() {
             var s = this.scale;
@@ -371,10 +371,11 @@ function scaleHill() {
         .start();
 }
 
+// 再和云一起缩小到瓶口
 function scaleCloud() {
-    $fadeCloud.addClass('scale');
+    $fadeCloud.addClass('scale-to-mouth');
     new TWEEN.Tween({scale: .4})
-        .to({scale: .05}, 3000)
+        .to({scale: .10}, 1000)
         // .easing(TWEEN.Easing.Quartic.In)
         .onUpdate(function() {
             var s = this.scale;
@@ -383,10 +384,44 @@ function scaleCloud() {
         .onComplete(function() {
             $water.removeClass('crazy');
             flyWater2();
-            becomeTag();
+            // becomeTag();
             // scaleCloud();
+            flyDown();
         })
         .start();
+}
+function flyDown() {
+    // new TWEEN.Tween(moutain.position)
+    //     .to({y: -100}, 1000)
+    //     // .easing(TWEEN.Easing.Quartic.In)
+    //     .onUpdate(function() {
+    //     })
+    //     .onComplete(function() {
+    //         // $water.removeClass('crazy');
+    //         // flyWater2();
+    //         // becomeTag();
+    //         // scaleCloud();
+    //         // flyDown();
+    //     })
+    //     .start();
+    $fadeCloud.removeClass('scale-to-mouth').addClass('fly-down');
+    $(webglContainer).animate({
+        notexit: 15
+    }, {
+        step: function(now, fx) {
+            console.log('now:', now);
+            $(this).css({
+                '-webkit-transform': 'translate(0, ' + now + 'px)',
+                'transform': 'translate(0, ' + now + 'px)',
+                'opacity': '' + ((15 - now) / 15 * 100)
+            })
+        },
+        duration: 1000,
+        easing: 'linear',
+        done: function() {
+
+        }
+    })
 }
 
 function becomeTag() {

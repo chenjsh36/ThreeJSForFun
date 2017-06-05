@@ -28,7 +28,7 @@ body {
 #webgl-container {
     will-change: transform;
     // transition: .5s all ease-in;
-    transition: 5s all ease-in;   
+    // transition: 5s all ease-in;   
     // &.scale {
     //     transform: scale(.05, .05);
     // }
@@ -41,10 +41,19 @@ body {
     // transition: .5s all ease-in;
     // transition: 3s all ease-in;
     transition: 3s all linear;
+
+    &.scale-to-mouth {
+        transform: scale(.15, .15);
+        transition: 1s all linear;
+    }
     &.scale {
         transform: scale(.05, .05);
     }
-
+    &.fly-down {
+        transform: translate(0, 15px) scale(.15, .15);
+        opacity: 0;
+        transition: 1s all linear;
+    }
     .left-cloud {
         // position: absolute;
         // left: 0;
@@ -184,25 +193,25 @@ body {
         transform: translate(0, 0%);
     } 
     12.5% {
-        transform: translate(4%, 1%);
+        transform: translate(2%, 1%);
     }
     25% {
         transform: translate(0%, 0);
     }
     37.5% {
-        transform: translate(-4%, 1%);
+        transform: translate(-2%, 1%);
     }
     50% {
         transform: translate(0%, 0);
     }
     62.5% {
-        transform: translate(4%, 1%);
+        transform: translate(2%, 1%);
     }
     75% {
         transform: translate(0%, 0);
     }
     87.5% {
-        transform: translate(-4%, 1%);
+        transform: translate(-2%, 1%);
     }
     100% {
         transform: translate(0, 0);
