@@ -176,6 +176,21 @@ function getFlyWaterPicList() {
     }
     return retList;
 }
+
+// 使用合并图播放瓶子飞出
+function flyWater2() {
+    var anim;
+    var $water = $('#water');
+    var waterH = $water.height();
+    var waterW = $water.width();
+    var waterBackW = 750 * waterH / 1220 * 26;
+    console.log('waterH:', waterH, waterBackW);
+    anim = frameAnimation.anims($('#water'), waterBackW, 26, 1, 1, function() {
+        console.log('ok');
+    });
+    anim.start();
+}
+
 // 瓶子飞出来
 function flyWater() {
     waterPicList = getFlyWaterPicList();
@@ -231,7 +246,8 @@ function animateCloudPic() {
         cloudTimeHandle = setTimeout(animateCloudPic, 5000 / len);
     } else {
         cloudPicCur = 0;
-        flyWater();
+        // flyWater();
+        flyWater2();
     }
 }
 
@@ -339,20 +355,40 @@ function loadHillGltf() {
 
 // 将雪山和云一起缩小
 function scaleHill() {
-    $fadeCloud.addClass('scale');
+    // $fadeCloud.addClass('scale');
     new TWEEN.Tween({scale: 1})
-        .to({scale: .05}, 5000)
+        .to({scale: .4}, 3000)
         .easing(TWEEN.Easing.Quartic.In)
         .onUpdate(function() {
             var s = this.scale;
             moutain.scale.set(s, s, s);
         })
         .onComplete(function() {
-            flyWater();
-            becomeTag();
+            // flyWater2();
+            // becomeTag();
+            scaleCloud();
         })
         .start();
 }
+
+function scaleCloud() {
+    $fadeCloud.addClass('scale');
+    new TWEEN.Tween({scale: .4})
+        .to({scale: .05}, 3000)
+        // .easing(TWEEN.Easing.Quartic.In)
+        .onUpdate(function() {
+            var s = this.scale;
+            moutain.scale.set(s, s, s);
+        })
+        .onComplete(function() {
+            $water.removeClass('crazy');
+            flyWater2();
+            becomeTag();
+            // scaleCloud();
+        })
+        .start();
+}
+
 function becomeTag() {
     $(webglContainer).fadeOut();
     $fadeCloud.fadeOut();
@@ -361,10 +397,10 @@ function becomeTag() {
 
 // 开始-----------------------
 var imgList = ['/threejs/static/img/上下云透明.png'];
-cloudPicList = getFlyCloudPicList();
-waterPicList = getFlyWaterPicList();
+// cloudPicList = getFlyCloudPicList();
+// waterPicList = getFlyWaterPicList();
 
-loadAllImage(imgList.concat(cloudPicList, waterPicList))
+loadAllImage(imgList)
 .then(function(imgData) {
     loadHillGltf()
     .then(function(gltfdata) {
@@ -380,7 +416,9 @@ function main() {
         $water.removeClass('ready');
         $water.animate({
             'top': '0%'
-        }, 500, function() {
+        }, 400, function() {
+            
+            $water.addClass('crazy');
             console.log('scale');
             // flyCloud();
             scaleHill();

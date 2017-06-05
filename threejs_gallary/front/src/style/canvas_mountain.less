@@ -35,13 +35,70 @@ body {
 }
 
 #fade-cloud {
-    background-image: url('/threejs/static/img/上下云透明.png');
+    // background-image: url('/threejs/static/img/上下云透明.png');
     background-size: cover;
     will-change: transform;
     // transition: .5s all ease-in;
-    transition: 5s all ease-in;
+    // transition: 3s all ease-in;
+    transition: 3s all linear;
     &.scale {
         transform: scale(.05, .05);
+    }
+
+    .left-cloud {
+        // position: absolute;
+        // left: 0;
+        // top: 0;
+        // height: 100%;
+        // width: 100%;
+        // margin-top: -88%;
+        // margin-left: -55%;
+        // background-image: url(/threejs/static/img/canvas_moutain_left.png);
+        // background-size: auto 200%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 200%;
+        width: 200%;
+        margin-top: -88%;
+        margin-left: -55%;
+        background-image: url(/threejs/static/img/canvas_moutain_left.png);
+        background-size: auto 100%;
+    }
+    .right-cloud {        
+        // position: absolute;
+        // right: 0;
+        // top: 0;
+        // height: 100%;
+        // width: 100%;
+        // margin-top: -89%;
+        // margin-right: -64%;
+        // background-image: url(/threejs/static/img/canvas_moutain_right.png);
+        // background-size: auto 200%;
+        // background-position: 100% 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 200%;
+        width: 200%;
+        margin-top: -89%;
+        margin-right: -64%;
+        background-image: url(/threejs/static/img/canvas_moutain_right.png);
+        background-size: auto 100%;
+        background-position: 100% 0;
+
+    }
+    .bottom-cloud {        
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 200%;
+        width: 200%;
+        margin-left: -56%;
+        margin-bottom: -89%;
+        background-image: url(/threejs/static/img/canvas_moutain_bottom.png);
+        background-size: cover;
+        background-position: 0 100%;
     }
 }
 
@@ -51,12 +108,16 @@ body {
     top: 33%;
     width: 100%;
     height: 100%;
-    background-image: url('/threejs/static/img/water/合成 1_2_00000.png');
-    background-size: cover;
+    // background-image: url('/threejs/static/img/water/合成 1_2_00000.png');
+    background-image: url('/threejs/static/img/canvas_mountain_flybow.png');
+    background-size: auto 100%;
     will-change: transform;
 
     &.ready {
         animation: ready 10s 0s infinite alternate linear;
+    }
+    &.crazy {
+        animation: crazy .3s 0s infinite alternate linear;
     }
 }
 
@@ -82,58 +143,68 @@ body {
 
 @keyframes ready {
     0% {
-        // left: 50%;
-        // bottom: -62%;
         transform: translate(0, 0);
     } 
     10% {
-        // left: 52%;
-        // bottom: -60%;
         transform: translate(2%, 2%);
     }
     20% {
-        // left: 53%;
-        // bottom: -60%;
         transform: translate(3%, 2%);
     }
     30% {  
-        // left: 53%;
-        // bottom: -59%;
         transform: translate(3%, 3%);
     }
     40% {  
-        // left: 52%;
-        // bottom: -58%;
         transform: translate(2%, 4%);
     }
     50% {  
-        // left: 50%;
-        // bottom: -57%;
         transform: translate(0, 5%);
     }
     60% {  
-        // left: 49%;
-        // bottom: -58%;
         transform: translate(-1%, 4%);
     }
     70% {  
-        // left: 47%;
-        // bottom: -59%;
         transform: translate(-3%, 3%);
     }
     80% {  
-        // left: 46%;
-        // bottom: -60%;
         transform: translate(-4%, 2%);
     }
     90% {  
-        // left: 47%;
-        // bottom: -63%;
         transform: translate(-3%, -1%);
     }
     100% {  
+        transform: translate(0, 0);
+    }
+}
+
+@keyframes crazy {
+    0% {
         // left: 50%;
         // bottom: -62%;
+        transform: translate(0, 0%);
+    } 
+    12.5% {
+        transform: translate(4%, 1%);
+    }
+    25% {
+        transform: translate(0%, 0);
+    }
+    37.5% {
+        transform: translate(-4%, 1%);
+    }
+    50% {
+        transform: translate(0%, 0);
+    }
+    62.5% {
+        transform: translate(4%, 1%);
+    }
+    75% {
+        transform: translate(0%, 0);
+    }
+    87.5% {
+        transform: translate(-4%, 1%);
+    }
+    100% {
         transform: translate(0, 0);
     }
 }
