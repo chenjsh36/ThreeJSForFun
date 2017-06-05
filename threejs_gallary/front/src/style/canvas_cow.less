@@ -30,7 +30,23 @@ body {
     width: 100%;
     height: 100%;
 }
-
+// 挤奶
+#milkink {
+    position: absolute;
+    width: 75px;
+    height: 122px;
+    left: 50%;
+    margin-left: -37px; // 225 / 2 再向右偏移对准
+    bottom: 85px;
+    background: url(/threejs/static/img/canvas_milk_out.png);
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    opacity: 1;
+    &.hide {
+        opacity: 0;
+    }
+}
 // 奶瓶
 .milkbox {
     position: absolute;
@@ -71,18 +87,7 @@ body {
     cursor: pointer;
     // background-color: gray;
 }
-#milkink {
-    position: absolute;
-    right: 26%;
-    bottom: 100px;
 
-    display: none;
-    width: 30%;
-    height: 158px;
-
-    background: url(/threejs/static/img/milkink/milkink1.png);
-    background-size: cover;
-}
 
 #milk {
     position: absolute;
@@ -108,3 +113,15 @@ body {
     background-size: cover;
 }
 
+
+#loading {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

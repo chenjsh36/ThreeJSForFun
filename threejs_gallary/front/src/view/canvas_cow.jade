@@ -9,6 +9,8 @@ html(lang="en")
     body
         #game-root
             #webgl-container
+            //- 滴落奶
+            #fall-milk
             //- 牛奶盒
             #milkbox1.milkbox
             #milkbox2.milkbox.hide
@@ -16,11 +18,12 @@ html(lang="en")
             //- 金典牛奶
             #milk
             //- 挤牛奶
-            #milkink
+            #milkink.hide
             //- 蝴蝶
             #fly
             //- 点击挤牛奶
             #cow-naz
+            #loading 加载中...
         script(src="/threejs/static/lib/threejs/stats.min.js")
         script(src="/threejs/static/lib/threejs/dat.gui.min.js")
         script(src="/threejs/static/lib/threejs/Detector.js")
