@@ -59,6 +59,15 @@ var cowFile;
 var walkCowFile;
 var grassFile;
 
+// 产品变量
+var $productPage = $('#product-page');
+var $product = $('#product-page .product');
+var $caseShake = $('#product-page .case-shake');
+var $caseOpen = $('#product-page .case-open');
+var $buyBtn = $('#product-page .buy-btn');
+var shakeCaseAnim;
+var openCaseAnim;
+
 // 函数定义---------------------------------
 function init() {
     var scalePoint = 1;
@@ -181,10 +190,15 @@ function init() {
     animations = walkCowFile.animations;
     if (animations && animations.length) {
         walkCowMixer = new THREE.AnimationMixer(walkCow);
+
         for (var i = 0; i < animations.length; i++) {
             var animation = animations[i];
             walkCowMixer.clipAction(animation).play();    
         }
+        // Play a specific animation
+        // window.clip = THREE.AnimationClip.findByName( animations, 'animation_74' );
+        // window.action = walkCowMixer.clipAction( clip );
+        // action.play();
     }
     scene.add(walkCow);
     cowWalkIn();
@@ -259,9 +273,9 @@ function init() {
     scene.add(ambientLight);
 
     //- 直射灯
-    var directionalLight = new THREE.DirectionalLight( 0xdddddd );
-    directionalLight.position.set( 0, 0, 1 ).normalize();
-    scene.add( directionalLight );
+    // var directionalLight = new THREE.DirectionalLight( 0xdddddd );
+    // directionalLight.position.set( 0, 0, 1 ).normalize();
+    // scene.add( directionalLight );
 
     // //- 点灯
     // var light = new THREE.PointLight(0xFFFFFF);
@@ -288,6 +302,7 @@ function init() {
         addMilk2();
         startFallMilk();
     })
+    initProduct()
 }
 
 // 显示空白瓶子
@@ -310,8 +325,8 @@ function cowWalkIn() {
     var headIn = new TWEEN.Tween(walkCow.position)
         .to({
             x: 320
-        }, 6000)
-        .delay(1000)
+        }, 7500)
+        .delay(2000)
         // .easing(TWEEN.Easing.Exponential.InOut)
     
     var legIn = new TWEEN.Tween(walkCow.position)
@@ -321,7 +336,7 @@ function cowWalkIn() {
         .onComplete(function() {
             cowStatus = 'standing'
         })
-        .delay(2000);
+        .delay(5000);
     var downCamera = new TWEEN.Tween(camera.position)
         .to({
             z: 540,
@@ -358,7 +373,8 @@ function addMilk2() {
     }
     anim = frameAnimation.anims($('' + milkID), 5625, 25, 2, 1, function() {
         if (milkBoxStatus === 3) {
-            $('.milkbox').hide();
+            // $('.milkbox').hide();
+
             $('#milkink').hide();
             $cowNaz.hide();
             showJinDian();
@@ -378,26 +394,36 @@ function loopMilk() {
     if (loopAnim) {
         loopAnim.stop();
     }
-    console.log('loopMilk:', milkID);
-    loopAnim = frameAnimation.anims($('' + milkID), 5625, 25, 3, 0, function() {}, 18);
+    loopAnim = frameAnimation.anims($('' + milkID), 5625, 25, 3, 1, function() {}, 18);
     loopAnim.start();
 }
 // 滴落奶
 function startFallMilk() {
+    var width = 112.5;
+    var steps = 25;
     $('#milkink').removeClass('hide');
     if (!loopFallMilk) {
-        loopFallMilk = frameAnimation.anims($('#milkink'), 1875, 25, 1, 0);
+        loopFallMilk = frameAnimation.anims($('#milkink'), width * steps, steps, 1, 0);
     }
     loopFallMilk.start();
 }
 
 window.startFallMilk = startFallMilk;
 function stopFallMilk() {
+    console.log('stop fall milk');
     $('#milkink').addClass('hide');
     loopFallMilk.stop(true);
 }
 
-function showJinDian() {
+function showJinDian() {    
+    var windowH = $(window).height();
+    $milkBox = $('#milkbox3');
+    $milkBox.removeClass('hide');
+    $milkBox.animate({
+        bottom: windowH / 3 + 'px'
+    }, 4000, function() {
+        endGame();
+    });
     TWEEN.removeAll();
     new TWEEN.Tween(camera.position)
         .to({
@@ -409,12 +435,27 @@ function showJinDian() {
             render();
         })
         .onComplete(function() {
-            var $milk = $("#milk");
-            $(webglContainer).hide();
-            $milk.animate({'bottom': '250px'}, 600);
+            // var $milk = $("#milk");
+            // var windowH = $(window).height();
+
+            // $(webglContainer).hide();
+            // $milk.animate({'bottom': '250px'}, 600, function() {
+            //     endGame();
+            // });
         })
         .start();
 }
+function endGame() {
+    // $("#milk").addClass('scale');
+    setTimeout(function() {
+        showProduct(1000);
+        $("#milkbox3").animate({
+            opacity: 0
+        }, 1000);
+    }, 1000);
+
+}
+
 function animate() {
     requestAnimationFrame(animate);
     // camera.lookAt(scene.position);
@@ -553,8 +594,8 @@ function loadCowGltf() {
     var grassurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/5e6c2c4bb052ef7562b52654c5635127.gltf'
     var bburl = 'https://ossgw.alicdn.com/tmall-c3/tmx/7554d11d494d79413fc665e9ef140aa6.gltf'
     // var walkCowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/3972247d3c4e96d1ac7e83a173e3a331.gltf'; // 1
-    var walkCowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/95628df6d8a8dc3adc3c41b97ba2e49c.gltf'; // 2
-    // var walkCowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/15e972f4cc71db07fee122da7a125e5b.gltf'; // 3
+    // var walkCowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/95628df6d8a8dc3adc3c41b97ba2e49c.gltf'; // 2
+    var walkCowUrl = 'https://ossgw.alicdn.com/tmall-c3/tmx/15e972f4cc71db07fee122da7a125e5b.gltf'; // 3
     var cowurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/2f17ddef947a7b6c702af69ff0e5b95f.gltf';
     var doorurl = 'https://ossgw.alicdn.com/tmall-c3/tmx/203247ec660952407695fdfaf45812af.gltf';
     var demourl = 'https://ossgw.alicdn.com/tmall-c3/tmx/25ed65d4e9684567962230671512f731.gltf'
@@ -574,6 +615,68 @@ function loadCowGltf() {
     return def.promise();
 }
 
+// 产品函数
+function initProduct() {
+    var winSize = {
+        width: $(window).width(),
+        height: $(window).height()
+    };
+
+    var buyBtnW = winSize.width * .4;
+    var buyBtnH = 84 * buyBtnW / 346;
+    var buyBtnBottom = 50;
+    $buyBtn.css({
+        height: buyBtnH + 'px',
+        width: buyBtnW + 'px',
+        bottom: buyBtnBottom + 'px',
+        'margin-left': (-buyBtnW / 2) + 'px'
+    })
+
+    var caseW = winSize.width * .8;
+    var caseH = 638 * caseW / 640;
+    var caseBottom = buyBtnBottom + buyBtnH + 50;
+    $caseShake.css({
+        height: caseH + 'px',
+        width: caseW + 'px',
+        'margin-left': (-caseW / 2) + 'px',
+        bottom: caseBottom + 'px'
+    })
+    $caseOpen.css({
+        height: caseH + 'px',
+        width: caseW + 'px',
+        'margin-left': (-caseW / 2) + 'px',
+        bottom: caseBottom + 'px'
+    })
+}
+
+function showProduct(duration) {
+    shakeCase();
+    $productPage.fadeIn(duration);
+    $caseShake.one('click', function() {
+        openCase();
+    })
+}
+
+function shakeCase() {
+    var steps = 15;
+    var width = $caseShake.width();
+    var backW = width * steps;
+    var duration = .5
+    shakeCaseAnim = frameAnimation.anims($caseShake, backW, steps, duration, 0);
+    shakeCaseAnim.start();
+}
+function openCase() {
+    var steps = 12;
+    var width = $caseOpen.width();
+    var backW = width * steps;
+    var duration = 1;
+    shakeCaseAnim.stop();
+    $caseShake.hide();
+    $caseOpen.show();
+    console.log('openCase:', width, backW, steps);
+    openCaseAnim = frameAnimation.anims($caseOpen, backW, steps, duration, 1);
+    openCaseAnim.start();
+}
 // 函数定义---------------------------------
 
 // 开始-----------------------

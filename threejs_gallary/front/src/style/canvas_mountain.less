@@ -128,6 +128,10 @@ body {
     &.crazy {
         animation: crazy .3s 0s infinite alternate linear;
     }
+    &.scale {
+        transition: 1s all linear;
+        transform: scale(.8, .8) translate(-15px, -135px);
+    }
 }
 
 #loading {
@@ -148,6 +152,52 @@ body {
     top: 0;
     height: 120px;
     width: 120px;
+}
+
+#product-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+
+
+    .product {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%,0);
+        width: 120%;
+        height: 100%;
+        background-image: url('/threejs/static/img/product/产品页-依云水-产品.png');
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+    }
+    .case-open {
+        display: none;
+        position: absolute;
+        left: 50%;
+        background-image: url('/threejs/static/img/product/产品页-宝箱打开序列.png');
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+    }
+    .case-shake {
+        position: absolute;
+        left: 50%;
+        background-image: url('/threejs/static/img/product/产品页-宝箱抖动序列.png');
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+    }
+    .buy-btn {
+        position: absolute;
+        left: 50%;
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-image: url('/threejs/static/img/product/购买按钮.png');
+        background-repeat: no-repeat;
+    }
 }
 
 @keyframes ready {

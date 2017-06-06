@@ -1,5 +1,5 @@
 var Bubbles = require('./canvas_catchfish_bubbles.js');
-require('./canvas_catchfish_fish.js');
+// require('./canvas_catchfish_fish.js');
 
 // 变量定义---------------------------------------------------
 var bubble1,
@@ -56,6 +56,15 @@ var $fishCatcher2 = $('#fish-catcher2');
 
 var clock = new THREE.Clock();
 var canvasContainer = document.getElementById('webgl-container');
+
+// 产品变量
+var $productPage = $('#product-page');
+var $product = $('#product-page .product');
+var $caseShake = $('#product-page .case-shake');
+var $caseOpen = $('#product-page .case-open');
+var $buyBtn = $('#product-page .buy-btn');
+var shakeCaseAnim;
+var openCaseAnim;
 
 imgData = [];
 // 变量定义---------------------------------------------------
@@ -254,6 +263,8 @@ function init() {
             }
         });
     })
+
+    initProduct();
 }
 
 function showSwimFish() {
@@ -372,19 +383,22 @@ function showCatcherEnd() {
     new TWEEN.Tween(fish.rotation)
         .to({
             x: Math.PI / 5
-        }, 1000)
+        }, 2000)
         .easing(TWEEN.Easing.Exponential.InOut)
         .start();
     new TWEEN.Tween(fishBow.position)
         .to({
             y: -200 
-        }, 1000)
+        }, 2000)
         .easing(TWEEN.Easing.Exponential.InOut)
         .start();
     new TWEEN.Tween(this)
         .to({}, 1000 * 2)
         .onUpdate(function() {
             render();
+        })
+        .onComplete(function() {
+            endGame();
         })
         .start();
     // 气泡和背景鱼群消失
@@ -403,6 +417,20 @@ function showCatcherEnd() {
     })
 }
 
+function endGame() {
+    $('#webgl-container').addClass('scale');
+    setTimeout(function() {
+        showProduct(1000);
+        $('#webgl-container').animate({
+            opacity: 0
+        }, 1000, function() {
+            console.log('remove ');
+            $('#webgl-container').css({
+                display: 'none'
+            })
+        });
+    }, 1000);
+}
 
 // 加载图片
 function preLoadImg(url) {
@@ -612,6 +640,70 @@ function showShipFly() {
         shipPicCur = 9;
         // showCatcherEnd();
     }
+}
+
+
+// 产品函数
+function initProduct() {
+    var winSize = {
+        width: $(window).width(),
+        height: $(window).height()
+    };
+
+    var buyBtnW = winSize.width * .4;
+    var buyBtnH = 84 * buyBtnW / 346;
+    var buyBtnBottom = 50;
+    $buyBtn.css({
+        height: buyBtnH + 'px',
+        width: buyBtnW + 'px',
+        bottom: buyBtnBottom + 'px',
+        'margin-left': (-buyBtnW / 2) + 'px'
+    })
+
+    var caseW = winSize.width * .8;
+    var caseH = 638 * caseW / 640;
+    var caseBottom = buyBtnBottom + buyBtnH + 50;
+    $caseShake.css({
+        height: caseH + 'px',
+        width: caseW + 'px',
+        'margin-left': (-caseW / 2) + 'px',
+        bottom: caseBottom + 'px'
+    })
+    $caseOpen.css({
+        height: caseH + 'px',
+        width: caseW + 'px',
+        'margin-left': (-caseW / 2) + 'px',
+        bottom: caseBottom + 'px'
+    })
+}
+
+function showProduct(duration) {
+    shakeCase();
+    $productPage.fadeIn(duration);
+    $caseShake.one('click', function() {
+        openCase();
+    })
+}
+
+function shakeCase() {
+    var steps = 15;
+    var width = $caseShake.width();
+    var backW = width * steps;
+    var duration = .5
+    shakeCaseAnim = frameAnimation.anims($caseShake, backW, steps, duration, 0);
+    shakeCaseAnim.start();
+}
+function openCase() {
+    var steps = 12;
+    var width = $caseOpen.width();
+    var backW = width * steps;
+    var duration = 1;
+    shakeCaseAnim.stop();
+    $caseShake.hide();
+    $caseOpen.show();
+    console.log('openCase:', width, backW, steps);
+    openCaseAnim = frameAnimation.anims($caseOpen, backW, steps, duration, 1);
+    openCaseAnim.start();
 }
 // 函数定义-------------------------------------------
 

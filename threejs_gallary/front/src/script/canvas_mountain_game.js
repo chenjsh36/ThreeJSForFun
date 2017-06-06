@@ -29,6 +29,15 @@ var cloudPicCur = 0;
 
 var $fadeCloud = $('#fade-cloud');
 
+// 产品变量
+var $productPage = $('#product-page');
+var $product = $('#product-page .product');
+var $caseShake = $('#product-page .case-shake');
+var $caseOpen = $('#product-page .case-open');
+var $buyBtn = $('#product-page .buy-btn');
+var shakeCaseAnim;
+var openCaseAnim;
+
 // 变量定义---------------------------------
 
 
@@ -148,6 +157,8 @@ function init() {
     controls.target = new THREE.Vector3(0,15,0);
     //- controls.maxPolarAngle = Math.PI / 2;
     //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
+
+    initProduct();
 }
 
 function animate() {
@@ -187,6 +198,7 @@ function flyWater2() {
     console.log('waterH:', waterH, waterBackW);
     anim = frameAnimation.anims($('#water'), waterBackW, 26, 1, 1, function() {
         console.log('ok');
+        endGame();
     });
     anim.start();
 }
@@ -419,14 +431,91 @@ function flyDown() {
         duration: 1000,
         easing: 'linear',
         done: function() {
-
         }
     })
+}
+
+function endGame() {
+    $water.addClass('scale');
+    setTimeout(function() {
+        showProduct(1000);
+        $water.animate({
+            opacity: 0
+        }, 1000, function(){
+            $water.css({
+                display: 'none'
+            })
+        });
+    }, 1000);
 }
 
 function becomeTag() {
     $(webglContainer).fadeOut();
     $fadeCloud.fadeOut();
+}
+
+
+// 产品函数
+function initProduct() {
+    var winSize = {
+        width: $(window).width(),
+        height: $(window).height()
+    };
+
+    var buyBtnW = winSize.width * .4;
+    var buyBtnH = 84 * buyBtnW / 346;
+    var buyBtnBottom = 50;
+    $buyBtn.css({
+        height: buyBtnH + 'px',
+        width: buyBtnW + 'px',
+        bottom: buyBtnBottom + 'px',
+        'margin-left': (-buyBtnW / 2) + 'px'
+    })
+
+    var caseW = winSize.width * .8;
+    var caseH = 638 * caseW / 640;
+    var caseBottom = buyBtnBottom + buyBtnH + 50;
+    $caseShake.css({
+        height: caseH + 'px',
+        width: caseW + 'px',
+        'margin-left': (-caseW / 2) + 'px',
+        bottom: caseBottom + 'px'
+    })
+    $caseOpen.css({
+        height: caseH + 'px',
+        width: caseW + 'px',
+        'margin-left': (-caseW / 2) + 'px',
+        bottom: caseBottom + 'px'
+    })
+}
+
+function showProduct(duration) {
+    shakeCase();
+    $productPage.fadeIn(duration);
+    $caseShake.one('click', function() {
+        openCase();
+    })
+}
+
+function shakeCase() {
+    var steps = 15;
+    var width = $caseShake.width();
+    var backW = width * steps;
+    var duration = .5
+    shakeCaseAnim = frameAnimation.anims($caseShake, backW, steps, duration, 0);
+    shakeCaseAnim.start();
+}
+function openCase() {
+    var steps = 12;
+    var width = $caseOpen.width();
+    var backW = width * steps;
+    var duration = 1;
+    shakeCaseAnim.stop();
+    $caseShake.hide();
+    $caseOpen.show();
+    console.log('openCase:', width, backW, steps);
+    openCaseAnim = frameAnimation.anims($caseOpen, backW, steps, duration, 1);
+    openCaseAnim.start();
 }
 // 函数定义---------------------------------
 

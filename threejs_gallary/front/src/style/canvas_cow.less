@@ -33,11 +33,11 @@ body {
 // 挤奶
 #milkink {
     position: absolute;
-    width: 75px;
-    height: 122px;
-    left: 50%;
+    width: 112.5px; // 75px;
+    height: 183px; // 122px;
+    left: 57%;
     margin-left: -37px; // 225 / 2 再向右偏移对准
-    bottom: 85px;
+    bottom: 15px;
     background: url(/threejs/static/img/canvas_milk_out.png);
     background-size: auto 100%;
     background-repeat: no-repeat;
@@ -88,7 +88,7 @@ body {
     // background-color: gray;
 }
 
-
+// 经典
 #milk {
     position: absolute;
     right: 25%;
@@ -99,6 +99,11 @@ body {
 
     background: url(/threejs/static/img/box.png);
     background-size: cover;
+    
+    &.scale {
+        transform: scale(1.15, 1.15) translate(-26px, -10px);
+        transition: 1s all linear;
+    }
 }
 
 #fly {
@@ -124,4 +129,50 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+#product-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+
+
+    .product {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%,0);
+        width: 120%;
+        height: 100%;
+        background-image: url('/threejs/static/img/product/产品页-伊利-产品.png');
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+    }
+    .case-open {
+        display: none;
+        position: absolute;
+        left: 50%;
+        background-image: url('/threejs/static/img/product/产品页-宝箱打开序列.png');
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+    }
+    .case-shake {
+        position: absolute;
+        left: 50%;
+        background-image: url('/threejs/static/img/product/产品页-宝箱抖动序列.png');
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+    }
+    .buy-btn {
+        position: absolute;
+        left: 50%;
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-image: url('/threejs/static/img/product/购买按钮.png');
+        background-repeat: no-repeat;
+    }
 }

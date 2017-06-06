@@ -38,6 +38,7 @@ html {
 #back-1-1 {
 	background-image: url('/threejs/static/img/canvas_snow_back1_1.png');
 	background-position: 0 100%;
+	opacity: 0;
 }
 #back-1-2 {
 	background-image: url('/threejs/static/img/canvas_snow_back1_2.png');
@@ -51,15 +52,34 @@ html {
 }
 
 // 云
-#cloud {
+#cloud-container {
 	position: absolute;
 	left: 0;
 	top: 0;
-	background-image: url('/threejs/static/img/canvas_ice_snow.png');
-	background-size: auto 100%;
-	background-position: 0 0;
     will-change: left;
+
+	#only-cloud {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		background-image: url('/threejs/static/img/cavnas_ice_onlycloud.png');
+		background-size: auto 100%;
+		background-position: 0 0;
+	    will-change: left;
+	}
+	#cloud {
+		position: absolute;
+		left: 0;
+		top: 0;
+		background-image: url('/threejs/static/img/canvas_ice_snow.png');
+		background-size: auto 100%;
+		background-position: 0 0;
+	    will-change: left;
+	    display: none;
+	}	
 }
+
 
 
 #ice-container {
@@ -71,7 +91,11 @@ html {
     &.fly {
         animation: fly 10s 0s infinite alternate linear;
     }
-	
+	&.scale {
+		transition: 1s all linear;
+	    // transform: scale(1.5, 1.6) translate(16px,-39px);
+	    transform: scale(1.5, 1.6) translate(-5px, -66px);
+	}
 	.ice-cream {
 		position: absolute;
 		left: 0;
@@ -81,12 +105,14 @@ html {
 		background-position: 0 0;
 	}
 	#nut {
-		background-color: rgba(255, 255, 255, 0.5);
+		// background-color: rgba(255, 255, 255, 0.5);
+		background-image: url('/threejs/static/img/canvas_ice_broke2.png');
+		opacity: 0;
 	}
 
 	#ice {
 		background-image: url('/threejs/static/img/canvas_ice_become.png');
-		display: none;
+		// display: none;
 	}
 
 	#nut-ice {
@@ -96,7 +122,51 @@ html {
 
 }
 
+#product-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
 
+
+    .product {
+	    position: absolute;
+	    left: 50%;
+	    transform: translate(-50%,0);
+	    width: 120%;
+	    height: 100%;
+	    background-image: url('/threejs/static/img/product/产品页-中街-产品.png');
+	    background-size: 100% auto;
+	    background-repeat: no-repeat;
+    }
+    .case-open {
+  		display: none;
+		position: absolute;
+		left: 50%;
+		background-image: url('/threejs/static/img/product/产品页-宝箱打开序列.png');
+		background-position: 0 0;
+		background-size: auto 100%;
+		background-repeat: no-repeat;
+    }
+    .case-shake {
+		position: absolute;
+		left: 50%;
+		background-image: url('/threejs/static/img/product/产品页-宝箱抖动序列.png');
+		background-position: 0 0;
+		background-size: auto 100%;
+		background-repeat: no-repeat;
+    }
+    .buy-btn {
+		position: absolute;
+		left: 50%;
+		background-position: 0 0;
+		background-size: auto 100%;
+		background-image: url('/threejs/static/img/product/购买按钮.png');
+		background-repeat: no-repeat;
+    }
+}
 #loading {
     position: fixed;
     left: 0;

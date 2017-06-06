@@ -15,21 +15,29 @@ var webglContainer = document.getElementById('webgl-container');
 
 
 var $iceContainer = $('#ice-container');
+var $back11 = $('#back-1-1');
 var $back12 = $('#back-1-2');
 var $back2 = $('#back-2');
 // 炸裂的可乐豆
 var $nut = $('#nut');
+// 云容器
+var $cloudContainer = $('#cloud-container');
+var $onlyCloud = $('#only-cloud');
 // 下雪的云
 var $cloud = $('#cloud');
 // 结冰的冰棒
 var $ice = $('#ice');
 // 可乐豆和冰棒结合
 var $nutIce = $('#nut-ice');
-
+var $product = $('#product-page');
 var winSize = {
 	height: 0,
 	width: 0
 }
+var cloudCtW;
+var cloudCtH;
+var olCloudW;
+var olCloudH;
 var cloudW;
 var cloudH; 
 var iceCtW;
@@ -47,6 +55,15 @@ var iceAnim;
 var nutIceAnim;
 var iceDuration = 4;
 var nutIceDuration = 1;
+
+// 产品变量
+var $productPage = $('#product-page');
+var $product = $('#product-page .product');
+var $caseShake = $('#product-page .case-shake');
+var $caseOpen = $('#product-page .case-open');
+var $buyBtn = $('#product-page .buy-btn');
+var shakeCaseAnim;
+var openCaseAnim;
 // 变量定义---------------------------------
 
 // 函数定义---------------------------------
@@ -118,12 +135,24 @@ function init() {
 	console.log(winSize);
 
 	// 初始化各个元素的宽度和高度
-	cloudW = winSize.width * .6;
+	cloudCtW = winSize.width * .6;
+	$cloudContainer.css({
+		'width': cloudCtW + 'px',
+		'left': -cloudCtW + 'px'
+	})
+
+	olCloudW = cloudCtW;
+	olCloudH = 231 * olCloudW / 502;
+	$onlyCloud.css({
+		'width': olCloudW + 'px',
+		'height': olCloudH + 'px'
+	})
+
+	cloudW = cloudCtW; // winSize.width * .6;
 	cloudH = 763 * cloudW / 517; 
 	$cloud.css({
 		'width': cloudW + 'px',
-		'height': cloudH + 'px',
-		'left': -cloudW + 'px'
+		'height': cloudH + 'px'
 	})
 
 	// 冰棒容器 (和形成的冰棒一样)
@@ -138,7 +167,7 @@ function init() {
 
 	// 可乐豆炸裂
 	nutW = iceCtW;
-	nutH = iceCtH;
+	nutH = 1220 * nutW / 750;
 	$nut.css({
 		'width': nutW + 'px',
 		'height': nutH + 'px'
@@ -160,45 +189,59 @@ function init() {
 		'height': nutIceH + 'px',
 	});
 
-	brokeNut()
-	.then(function() {
-		bindNutEvent()
-	}) 
+	initProduct();
+
+	// brokeNut()
+	// .then(function() {
+	// 	bindNutEvent()
+	// }) 
+	bindNutEvent();
 }
+
 
 function brokeNut() {
 	var def = $.Deferred();
 	def.resolve(); // 暂时
-/*	var steps = 40; // ?
-	var duration = 1; 
-	var backW = nutW * steps;
-	nutAnim = frameAnimation.anims($nut, backW, steps, duration, 1, function() {
-		def.resolve();
-	});
-	nutAnim.start();*/
+	// var steps = 37; // ?
+	// var duration = 1; 
+	// var backW = nutW * steps;
+	// nutAnim = frameAnimation.anims($nut, backW, steps, duration, 1, function() {
+	// 	def.resolve();
+	// });
+	// nutAnim.start();
 	return def.promise();
 }
 
 // 可乐豆爆炸后绑定事件
 function bindNutEvent() {
 	$nut.one('click', function() {
-		fallSnow();
-		cloudIn()
+		$iceContainer.removeClass('fly');
+		brokeNut()
+		.then(cloudIn)		
 		.then(iceBecome)
 		.then(iceFadeout)
 		.then(function() {
-			console.log('淡化完成');
+			endGame();
 		})
 	})
 }
 
+function endGame() {
+	$iceContainer.addClass('scale');
+	setTimeout(function() {
+		showProduct(1000);
+		$iceContainer.animate({
+			opacity: 0
+		}, 1000);
+	}, 1000);
+}
 // 云飞进来
 function cloudIn() {
 	var def = $.Deferred();
-	var endLeft = winSize.width / 2 - cloudW / 2;
+	var endLeft = winSize.width / 2 - cloudCtW / 2;
 	var duration = 1000;
-	console.log('endLeft:', endLeft, winSize.width, cloudW);
-	$cloud.animate({
+	// console.log('endLeft:', endLeft, winSize.width, cloudW);
+	$cloudContainer.animate({
 		'left': endLeft + 'px'
 	}, 1000, 'linear', function() {
 		def.resolve();
@@ -211,7 +254,8 @@ function cloudIn() {
 function fallSnow() {
 	var steps= 29;
 	var duration = 1;
-	var backW = cloudW * steps
+	var backW = cloudW * steps;
+	$cloud.fadeIn(500);
 	snowAnim = frameAnimation.anims($cloud, backW, steps, duration, 0);
 	snowAnim.start();
 }
@@ -221,17 +265,31 @@ function iceBecome() {
 	var def = $.Deferred();
 	var steps = 40;
 	var backW = iceW * steps;
-	var backDuration = (iceDuration + nutIceDuration) * 1000;
-	console.log('$back-1-2', $back12, backDuration);
-	$back12.animate({opacity: 1}, backDuration);
-	$back2.animate({opacity: 1}, backDuration);
+
+	fallSnow();
+	backFadeIn();
+
 	$nut.hide();
-	$ice.show();
 	iceAnim = frameAnimation.anims($ice, backW, steps, iceDuration, 1, function() {
-		def.resolve();
+		$cloud.fadeOut(500);
+		setTimeout(function() {
+			def.resolve();
+		}, 1000)
 	});
 	iceAnim.start();
 	return def.promise();
+}
+
+function backFadeIn() {
+	var backDuration = (iceDuration + nutIceDuration);
+	
+	$back11.animate({opacity: 1}, backDuration * 1000);
+	setTimeout(function() {
+		$back2.animate({opacity: 1}, (backDuration - iceDuration / 2) * 1000);
+	}, iceDuration / 3 * 1000);
+	setTimeout(function() {
+		$back12.animate({opacity: 1}, (backDuration - iceDuration) * 1000);
+	}, iceDuration * .8 * 1000)
 }
 
 // 冰冰和豆豆结合
@@ -240,6 +298,9 @@ function iceFadeout() {
 	var steps = 6;
 	var backW = nutIceW * steps;
 	$nutIce.show();
+	$back11.animate({opacity: 0}, 800);
+	$back12.animate({opacity: 0}, 700);
+	$back2.animate({opacity: 0}, 600);
 	cloudOut();
 	nutIceAnim = frameAnimation.anims($nutIce, backW, steps, nutIceDuration, 1, function() {
 		def.resolve();
@@ -251,25 +312,92 @@ function iceFadeout() {
 function cloudOut() {
 	var def = $.Deferred();
 	var endLeft = winSize.width;
+	var endTop = cloudH;
 	var duration = 1000;
-	$cloud.animate({
-		'left': endLeft + 'px'
-	}, 1000, 'linear', function() {
+	$cloudContainer.animate({
+		'top': -cloudH + 'px'
+	}, 500, 'linear', function() {
 		def.resolve();
-		stopFallSnow();
+		// stopFallSnow();
 	})
 	return def.promise();
 }
 // 停止下雪
 function stopFallSnow() {
+
 	snowAnim.stop();
 }
-// 函数定义---------------------------------
 
+// 产品函数
+
+function initProduct() {
+	var winSize = {
+		width: $(window).width(),
+		height: $(window).height()
+	};
+
+	var buyBtnW = winSize.width * .4;
+	var buyBtnH = 84 * buyBtnW / 346;
+	var buyBtnBottom = 50;
+	$buyBtn.css({
+		height: buyBtnH + 'px',
+		width: buyBtnW + 'px',
+		bottom: buyBtnBottom + 'px',
+		'margin-left': (-buyBtnW / 2) + 'px'
+	})
+
+	var caseW = winSize.width * .8;
+	var caseH = 638 * caseW / 640;
+	var caseBottom = buyBtnBottom + buyBtnH + 50;
+	$caseShake.css({
+		height: caseH + 'px',
+		width: caseW + 'px',
+		'margin-left': (-caseW / 2) + 'px',
+		bottom: caseBottom + 'px'
+	})
+	$caseOpen.css({
+		height: caseH + 'px',
+		width: caseW + 'px',
+		'margin-left': (-caseW / 2) + 'px',
+		bottom: caseBottom + 'px'
+	})
+}
+
+function showProduct(duration) {
+	shakeCase();
+	$productPage.fadeIn(duration);
+	$caseShake.one('click', function() {
+		openCase();
+	})
+}
+
+function shakeCase() {
+	var steps = 15;
+	var width = $caseShake.width();
+	var backW = width * steps;
+	var duration = .5
+	shakeCaseAnim = frameAnimation.anims($caseShake, backW, steps, duration, 0);
+	shakeCaseAnim.start();
+}
+function openCase() {
+	var steps = 12;
+	var width = $caseOpen.width();
+	var backW = width * steps;
+	var duration = 1;
+	shakeCaseAnim.stop();
+	$caseShake.hide();
+	$caseOpen.show();
+	console.log('openCase:', width, backW, steps);
+	openCaseAnim = frameAnimation.anims($caseOpen, backW, steps, duration, 1);
+	openCaseAnim.start();
+}
+
+// 函数定义---------------------------------
 
 
 // 开始-----------------------
 var imgList = [
+	'/threejs/static/img/canvas_ice_broke2.png',
     '/threejs/static/img/canvas_snow_back1_1.png',
     '/threejs/static/img/canvas_snow_back1_2.png',
     '/threejs/static/img/canvas_snow_back2.png',
