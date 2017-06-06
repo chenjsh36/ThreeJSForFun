@@ -1,0 +1,136 @@
+body,
+html {
+    padding: 0;
+    margin: 0;
+}
+
+#snow-container {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+    background-color: black;
+	overflow: hidden;
+}
+
+
+#webgl-container,
+.webgl-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#back-1-1,
+#back-1-2,
+#back-2 {
+	position: absolute;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+#back-1-1 {
+	background-image: url('/threejs/static/img/canvas_snow_back1_1.png');
+	background-position: 0 100%;
+}
+#back-1-2 {
+	background-image: url('/threejs/static/img/canvas_snow_back1_2.png');
+	background-position: 0 0;
+	opacity: 0;
+}
+#back-2 {
+	background-image: url('/threejs/static/img/canvas_snow_back2.png');
+	background-position: 0 100%;
+	opacity: 0;
+}
+
+// 云
+#cloud {
+	position: absolute;
+	left: 0;
+	top: 0;
+	background-image: url('/threejs/static/img/canvas_ice_snow.png');
+	background-size: auto 100%;
+	background-position: 0 0;
+    will-change: left;
+}
+
+
+#ice-container {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+    will-change: transform;
+    
+    &.fly {
+        animation: fly 10s 0s infinite alternate linear;
+    }
+	
+	.ice-cream {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		background-size: auto 100%;
+		background-position: 0 0;
+	}
+	#nut {
+		background-color: rgba(255, 255, 255, 0.5);
+	}
+
+	#ice {
+		background-image: url('/threejs/static/img/canvas_ice_become.png');
+		display: none;
+	}
+
+	#nut-ice {
+		display: none;
+		background-image: url('/threejs/static/img/canvas_ice_fadeout.png');
+	}
+
+}
+
+
+#loading {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes fly {
+    0% {
+        transform: translate(0, 0);
+    } 
+
+    20% {
+        transform: translate(0%, 2%);
+    }
+
+    40% {  
+        transform: translate(0%, -2%);
+    }
+
+    60% {  
+        transform: translate(0%, 2%);
+    }
+
+    80% {  
+        transform: translate(0%, -2%);
+    }
+
+    100% {  
+        transform: translate(0, 0);
+    }
+}
