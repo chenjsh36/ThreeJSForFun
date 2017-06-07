@@ -8,8 +8,9 @@ var runsequence = require('run-sequence');
 var plumber = require('gulp-plumber');
 var notify = require('gulp-notify');
 var rename = require('gulp-rename');
-
-
+var uglify = require('gulp-uglify');
+var jade = require('gulp-jade');
+var cssmin = require('gulp-minify-css');
 var browsersync_server = browsersync.create();
 var reload = browsersync_server.reload;
 var root = {
@@ -20,7 +21,8 @@ var root = {
 var path = {
     view: {
         src: [root.src + '/view/**/*.jade'],
-        dist: root.dist + '/view'
+        dist: root.dist + '/view',
+        dist2: root.dist + '/html'
     },
     style: {
         src: [root.src + '/style/**/*.less'],
@@ -86,6 +88,14 @@ gulp.task('file', function() {
         ;
 })
 
+gulp.task('build_file', function() {
+    gulp.src(path.file.src)
+        .pipe(plumber())
+        .pipe(gulp.dest(path.file.dist))
+        .pipe(notify({message: 'File task complete'}))
+        ;
+})
+
 gulp.task('view', function() {
     gulp.src(path.view.src)
         .pipe(plumber())
@@ -98,6 +108,32 @@ gulp.task('view', function() {
         .pipe(notify({message: 'View task complete'}))
     ;
 });
+
+gulp.task('build_view', function() {
+    gulp.src(path.view.src)
+        .pipe(plumber())
+        .pipe(rename(function(path) {
+          path.dirname = ''
+        }))
+        .pipe(gulp.dest(path.view.dist))
+        .pipe(notify({message: 'View task complete'}))
+    ;
+});
+
+gulp.task('build_jade', function() {
+    gulp.src(path.view.src)
+        .pipe(jade({
+            pretty: true
+        }))
+        .pipe(rename(function(path) {
+          path.dirname = ''
+        }))
+        .pipe(gulp.dest(path.view.dist2))
+        .pipe(notify({message: 'View task complete'}))
+    ;
+});
+
+
 
 gulp.task('browserify_script', function() {
     gulp.src(path.script.src)
@@ -115,6 +151,21 @@ gulp.task('browserify_script', function() {
     ;
 });
 
+gulp.task('build_script', function() {
+    gulp.src(path.script.src)
+        .pipe(plumber())
+        .pipe(browserify({
+            debug: true
+        }))
+        .pipe(uglify())
+        .pipe(rename(function(path) {
+          path.dirname = ''
+        }))
+        .pipe(gulp.dest(path.script.dist))
+        .pipe(notify({message: 'Script task complete'}))
+    ;
+})
+
 gulp.task('less', function() {
   gulp.src(path.style.src)
     .pipe(plumber())
@@ -127,6 +178,19 @@ gulp.task('less', function() {
     .pipe(reload({stream: true}))
     .pipe(notify({message: 'Less task complete'}));
 });
+
+gulp.task('build_less', function() {
+  gulp.src(path.style.src)
+    .pipe(plumber())
+    .pipe(less())
+    .pipe(cssmin())
+    .pipe(rename(function(path) {
+      path.dirname = ''
+    }))
+    .pipe(gulp.dest(path.style.dist))
+    .pipe(notify({message: 'Less task complete'}));
+});
+
 
 gulp.task('browsersync', function() {
   browsersync.init({
@@ -168,5 +232,5 @@ gulp.task('default', ['clean'], function(){
 
 gulp.task('build', ['clean'], function(){
   // return gulp.start('view', 'browserify_module', 'browserify_coffee', 'less', 'watch');
-  runsequence('lib', 'module', 'browserify_script', 'less', 'view', 'img', 'file');
+  runsequence('lib', 'module', 'build_script', 'build_less', 'build_jade', 'build_view', 'img', 'build_file');
 });

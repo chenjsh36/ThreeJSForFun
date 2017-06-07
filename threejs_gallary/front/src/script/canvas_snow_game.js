@@ -10,8 +10,8 @@ var line;
 var ambientLight;
 var loader;
 
-var clock = new THREE.Clock();
-var webglContainer = document.getElementById('webgl-container');
+// var clock = new THREE.Clock();
+// var webglContainer = document.getElementById('webgl-container');
 
 
 var $iceContainer = $('#ice-container');
