@@ -12,6 +12,15 @@ body {
     background-color: black;
     overflow: hidden;
 }
+#game-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    overflow: hidden;
+}
+
 #webgl-container,
 .webgl-container {
     position: absolute;
@@ -21,19 +30,53 @@ body {
     width: 100%;
     height: 100%;
 }
-
-#milkbox {
+// 挤奶
+#milkink {
     position: absolute;
-    right: 31%;
-    // bottom: 52px;
-    bottom: -160px;
-    // display: none;
-    width: 30%;
-    height: 158px;
-
-    background: url(/threejs/static/img/milk/milk1.png);
-    background-size: cover;
+    width: 112.5px; // 75px;
+    height: 183px; // 122px;
+    left: 57%;
+    margin-left: -37px; // 225 / 2 再向右偏移对准
+    bottom: 15px;
+    background: url(/threejs/static/img/canvas_milk_out.png);
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    opacity: 1;
+    &.hide {
+        opacity: 0;
+    }
 }
+// 奶瓶
+.milkbox {
+    position: absolute;
+    // right: 31%;
+    // bottom: -160px;
+    // display: none;
+    width: 225px; // 750 * 366 / 1220
+    height: 366px;
+    bottom: -366px;
+    left: 50%;
+    margin-left: -95px; // 225 / 2 再向右偏移对准
+    // background: url(/threejs/static/img/canvas_milk1.png);
+    background-size: auto 100%;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    opacity: 1;
+    &.hide {
+        opacity: 0;
+    }
+}
+#milkbox1 {
+    background-image: url(/threejs/static/img/canvas_milk1.png);
+}
+#milkbox2 {
+    background-image: url(/threejs/static/img/canvas_milk2.png);
+}
+#milkbox3 {
+    background-image: url(/threejs/static/img/canvas_milk3.png);
+}
+
 #cow-naz {
     position: absolute;
     right: 31%;
@@ -44,19 +87,8 @@ body {
     cursor: pointer;
     // background-color: gray;
 }
-#milkink {
-    position: absolute;
-    right: 26%;
-    bottom: 100px;
 
-    display: none;
-    width: 30%;
-    height: 158px;
-
-    background: url(/threejs/static/img/milkink/milkink1.png);
-    background-size: cover;
-}
-
+// 经典
 #milk {
     position: absolute;
     right: 25%;
@@ -67,6 +99,11 @@ body {
 
     background: url(/threejs/static/img/box.png);
     background-size: cover;
+    
+    &.scale {
+        transform: scale(1.15, 1.15) translate(-26px, -10px);
+        transition: 1s all linear;
+    }
 }
 
 #fly {
@@ -81,3 +118,61 @@ body {
     background-size: cover;
 }
 
+
+#loading {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#product-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+
+
+    .product {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%,0);
+        width: 120%;
+        height: 100%;
+        background-image: url('/threejs/static/img/product/产品页-伊利-产品.png');
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+    }
+    .case-open {
+        display: none;
+        position: absolute;
+        left: 50%;
+        background-image: url('/threejs/static/img/product/产品页-宝箱打开序列.png');
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+    }
+    .case-shake {
+        position: absolute;
+        left: 50%;
+        background-image: url('/threejs/static/img/product/产品页-宝箱抖动序列.png');
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+    }
+    .buy-btn {
+        position: absolute;
+        left: 50%;
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-image: url('/threejs/static/img/product/购买按钮.png');
+        background-repeat: no-repeat;
+    }
+}

@@ -24,6 +24,13 @@ body {
     left: 0;
     top: 0;
 }
+
+#webgl-container {
+    &.scale {
+        transform: scale(1.5, 1.5) translate(0, -65px);
+        transition: 1s all linear;        
+    }
+}
 // 影藏
 #fish-hider {
     position: absolute;
@@ -133,6 +140,51 @@ body {
     background-size: 100% auto;
 }
 
+#product-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+
+
+    .product {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%,0);
+        width: 120%;
+        height: 100%;
+        background-image: url('/threejs/static/img/product/产品页-鳕鱼-产品.png');
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+    }
+    .case-open {
+        display: none;
+        position: absolute;
+        left: 50%;
+        background-image: url('/threejs/static/img/product/产品页-宝箱打开序列.png');
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+    }
+    .case-shake {
+        position: absolute;
+        left: 50%;
+        background-image: url('/threejs/static/img/product/产品页-宝箱抖动序列.png');
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-repeat: no-repeat;
+    }
+    .buy-btn {
+        position: absolute;
+        left: 50%;
+        background-position: 0 0;
+        background-size: auto 100%;
+        background-image: url('/threejs/static/img/product/购买按钮.png');
+        background-repeat: no-repeat;
+    }
+}
 @keyframes music-move {
     0% { 
         // -webkit-transform: rotate(0deg);

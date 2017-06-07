@@ -29,6 +29,15 @@ var cloudPicCur = 0;
 
 var $fadeCloud = $('#fade-cloud');
 
+// 产品变量
+var $productPage = $('#product-page');
+var $product = $('#product-page .product');
+var $caseShake = $('#product-page .case-shake');
+var $caseOpen = $('#product-page .case-open');
+var $buyBtn = $('#product-page .buy-btn');
+var shakeCaseAnim;
+var openCaseAnim;
+
 // 变量定义---------------------------------
 
 
@@ -148,11 +157,13 @@ function init() {
     controls.target = new THREE.Vector3(0,15,0);
     //- controls.maxPolarAngle = Math.PI / 2;
     //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
+
+    initProduct();
 }
 
 function animate() {
     requestAnimationFrame(animate);
-    camera.lookAt(scene.position);
+    // camera.lookAt(scene.position);
     // console.log(camera.rotation, camera.position);
 
     TWEEN.update();
@@ -176,6 +187,22 @@ function getFlyWaterPicList() {
     }
     return retList;
 }
+
+// 使用合并图播放瓶子飞出
+function flyWater2() {
+    var anim;
+    var $water = $('#water');
+    var waterH = $water.height();
+    var waterW = $water.width();
+    var waterBackW = 750 * waterH / 1220 * 26;
+    console.log('waterH:', waterH, waterBackW);
+    anim = frameAnimation.anims($('#water'), waterBackW, 26, 1, 1, function() {
+        console.log('ok');
+        endGame();
+    });
+    anim.start();
+}
+
 // 瓶子飞出来
 function flyWater() {
     waterPicList = getFlyWaterPicList();
@@ -231,7 +258,8 @@ function animateCloudPic() {
         cloudTimeHandle = setTimeout(animateCloudPic, 5000 / len);
     } else {
         cloudPicCur = 0;
-        flyWater();
+        // flyWater();
+        flyWater2();
     }
 }
 
@@ -337,34 +365,166 @@ function loadHillGltf() {
     return def.promise();
 }
 
-// 将雪山和云一起缩小
+// 先缩小到被底部云遮盖
 function scaleHill() {
-    $fadeCloud.addClass('scale');
+    // $fadeCloud.addClass('scale');
     new TWEEN.Tween({scale: 1})
-        .to({scale: .05}, 5000)
+        .to({scale: .4}, 2000)
         .easing(TWEEN.Easing.Quartic.In)
         .onUpdate(function() {
             var s = this.scale;
             moutain.scale.set(s, s, s);
         })
         .onComplete(function() {
-            flyWater();
-            becomeTag();
+            // flyWater2();
+            // becomeTag();
+            scaleCloud();
         })
         .start();
 }
+
+// 再和云一起缩小到瓶口
+function scaleCloud() {
+    $fadeCloud.addClass('scale-to-mouth');
+    new TWEEN.Tween({scale: .4})
+        .to({scale: .10}, 1000)
+        // .easing(TWEEN.Easing.Quartic.In)
+        .onUpdate(function() {
+            var s = this.scale;
+            moutain.scale.set(s, s, s);
+        })
+        .onComplete(function() {
+            $water.removeClass('crazy');
+            flyWater2();
+            // becomeTag();
+            // scaleCloud();
+            flyDown();
+        })
+        .start();
+}
+function flyDown() {
+    // new TWEEN.Tween(moutain.position)
+    //     .to({y: -100}, 1000)
+    //     // .easing(TWEEN.Easing.Quartic.In)
+    //     .onUpdate(function() {
+    //     })
+    //     .onComplete(function() {
+    //         // $water.removeClass('crazy');
+    //         // flyWater2();
+    //         // becomeTag();
+    //         // scaleCloud();
+    //         // flyDown();
+    //     })
+    //     .start();
+    $fadeCloud.removeClass('scale-to-mouth').addClass('fly-down');
+    $(webglContainer).animate({
+        notexit: 15
+    }, {
+        step: function(now, fx) {
+            console.log('now:', now);
+            $(this).css({
+                '-webkit-transform': 'translate(0, ' + now + 'px)',
+                'transform': 'translate(0, ' + now + 'px)',
+                'opacity': '' + ((15 - now) / 15 * 100)
+            })
+        },
+        duration: 1000,
+        easing: 'linear',
+        done: function() {
+        }
+    })
+}
+
+function endGame() {
+    $water.addClass('scale');
+    setTimeout(function() {
+        showProduct(1000);
+        $water.animate({
+            opacity: 0
+        }, 1000, function(){
+            $water.css({
+                display: 'none'
+            })
+        });
+    }, 1000);
+}
+
 function becomeTag() {
     $(webglContainer).fadeOut();
     $fadeCloud.fadeOut();
+}
+
+
+// 产品函数
+function initProduct() {
+    var winSize = {
+        width: $(window).width(),
+        height: $(window).height()
+    };
+
+    var buyBtnW = winSize.width * .4;
+    var buyBtnH = 84 * buyBtnW / 346;
+    var buyBtnBottom = 50;
+    $buyBtn.css({
+        height: buyBtnH + 'px',
+        width: buyBtnW + 'px',
+        bottom: buyBtnBottom + 'px',
+        'margin-left': (-buyBtnW / 2) + 'px'
+    })
+
+    var caseW = winSize.width * .8;
+    var caseH = 638 * caseW / 640;
+    var caseBottom = buyBtnBottom + buyBtnH + 50;
+    $caseShake.css({
+        height: caseH + 'px',
+        width: caseW + 'px',
+        'margin-left': (-caseW / 2) + 'px',
+        bottom: caseBottom + 'px'
+    })
+    $caseOpen.css({
+        height: caseH + 'px',
+        width: caseW + 'px',
+        'margin-left': (-caseW / 2) + 'px',
+        bottom: caseBottom + 'px'
+    })
+}
+
+function showProduct(duration) {
+    shakeCase();
+    $productPage.fadeIn(duration);
+    $caseShake.one('click', function() {
+        openCase();
+    })
+}
+
+function shakeCase() {
+    var steps = 15;
+    var width = $caseShake.width();
+    var backW = width * steps;
+    var duration = .5
+    shakeCaseAnim = frameAnimation.anims($caseShake, backW, steps, duration, 0);
+    shakeCaseAnim.start();
+}
+function openCase() {
+    var steps = 12;
+    var width = $caseOpen.width();
+    var backW = width * steps;
+    var duration = 1;
+    shakeCaseAnim.stop();
+    $caseShake.hide();
+    $caseOpen.show();
+    console.log('openCase:', width, backW, steps);
+    openCaseAnim = frameAnimation.anims($caseOpen, backW, steps, duration, 1);
+    openCaseAnim.start();
 }
 // 函数定义---------------------------------
 
 // 开始-----------------------
 var imgList = ['/threejs/static/img/上下云透明.png'];
-cloudPicList = getFlyCloudPicList();
-waterPicList = getFlyWaterPicList();
+// cloudPicList = getFlyCloudPicList();
+// waterPicList = getFlyWaterPicList();
 
-loadAllImage(imgList.concat(cloudPicList, waterPicList))
+loadAllImage(imgList)
 .then(function(imgData) {
     loadHillGltf()
     .then(function(gltfdata) {
@@ -380,7 +540,9 @@ function main() {
         $water.removeClass('ready');
         $water.animate({
             'top': '0%'
-        }, 500, function() {
+        }, 400, function() {
+            
+            $water.addClass('crazy');
             console.log('scale');
             // flyCloud();
             scaleHill();
