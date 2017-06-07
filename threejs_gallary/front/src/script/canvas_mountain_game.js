@@ -34,7 +34,7 @@ var $productPage = $('#product-page');
 var $product = $('#product-page .product');
 var $caseShake = $('#product-page .case-shake');
 var $caseOpen = $('#product-page .case-open');
-var $buyBtn = $('#product-page .buy-btn');
+var $buyBtn #= $('#product-page .buy-btn');
 var shakeCaseAnim;
 var openCaseAnim;
 
@@ -42,28 +42,6 @@ var openCaseAnim;
 
 
 // 函数定义---------------------------------
-// 补零
-function prefixInteger(num, n) {
-    return (Array(n).join(0) + num).slice(-n);
-}
-
-// 加载图片
-function preLoad(url) {
-    var def = $.Deferred();
-
-    return def.promise();
-}
-function loadImage(url, callback) { 
-    var img = new Image(); //创建一个Image对象，实现图片的预下载 
-    img.src = url; 
-    if (img.complete) { // 如果图片已经存在于浏览器缓存，直接调用回调函数 
-        callback.call(img); 
-        return; // 直接返回，不用再处理onload事件 
-    } 
-    img.onload = function () { //图片下载完毕时异步调用callback函数。 
-        callback.call(img);//将回调函数的this替换为Image对象 
-    }; 
-}; 
 function init() {
     var scalePoint = 1;
     var animations;
@@ -177,17 +155,6 @@ function render() {
     renderer.render( scene, camera );
 }
 
-function getFlyWaterPicList() {
-    var picPre = '/threejs/static/img/water/';
-    var picNum = 26;
-    var i = 0;
-    var retList = [];
-    for (; i < picNum; i++) {
-        retList.push(picPre + '合成 1_2_00' + prefixInteger(i, 3) + '.png')
-    }
-    return retList;
-}
-
 // 使用合并图播放瓶子飞出
 function flyWater2() {
     var anim;
@@ -202,67 +169,6 @@ function flyWater2() {
     });
     anim.start();
 }
-
-// 瓶子飞出来
-function flyWater() {
-    waterPicList = getFlyWaterPicList();
-    // console.log('waterPicList:', waterPicList);
-    animateWaterPic();
-}
-
-// 播放瓶子成型动画
-function animateWaterPic() {
-    var url = '';
-    clearTimeout(waterTimeHandle);
-    if (waterPicCur < waterPicList.length) {
-        url = 'url("' + waterPicList[waterPicCur] + '")';
-
-        // console.log('animateWaterPic:', url);
-        $water.css('background-image', url);
-        // $water.css('background-size','cover');
-        waterPicCur++;
-        waterTimeHandle = setTimeout(animateWaterPic, 1000 / 26);
-    } else {
-        waterPicCur = 0;
-    }
-}
-
-// 吸云
-function getFlyCloudPicList() {
-    var picPre = '/threejs/static/img/mountainyun/';
-    var picNum = 53;
-    var i = 0;
-    var retList = [];
-    for (; i < picNum; i++) {
-        retList.push(picPre + '吸云山_00' + prefixInteger(i, 3) + '.png')
-    }
-    return retList
-}
-function flyCloud () {
-    cloudPicList = getFlyCloudPicList();
-    // console.log('cloudPicList:', cloudPicList);
-    animateCloudPic();
-}
-// 播放吸云动画
-function animateCloudPic() {
-    var url = '';
-    var len = cloudPicList.length;
-    clearTimeout(cloudTimeHandle);
-    if (cloudPicCur < len) {
-        url = 'url("' + cloudPicList[cloudPicCur] + '")';
-
-        // console.log('animateCloudPic:', url);
-        $cloud.css('background', url);
-        $cloud.css('background-size','cover');
-        cloudPicCur++;
-        cloudTimeHandle = setTimeout(animateCloudPic, 5000 / len);
-    } else {
-        cloudPicCur = 0;
-        // flyWater();
-        flyWater2();
-    }
-}
-
 
 // 加载图片
 function preLoadImg(url) {

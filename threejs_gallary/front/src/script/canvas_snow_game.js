@@ -10,10 +10,6 @@ var line;
 var ambientLight;
 var loader;
 
-// var clock = new THREE.Clock();
-// var webglContainer = document.getElementById('webgl-container');
-
-
 var $iceContainer = $('#ice-container');
 var $back11 = $('#back-1-1');
 var $back12 = $('#back-1-2');
@@ -34,6 +30,8 @@ var winSize = {
 	height: 0,
 	width: 0
 }
+var imgList;
+
 var cloudCtW;
 var cloudCtH;
 var olCloudW;
@@ -93,19 +91,6 @@ function preLoadImg(url) {
     return def.promise();
 }
 
-// 加载单张图片
-function loadImage(url, callback) { 
-    var img = new Image(); //创建一个Image对象，实现图片的预下载 
-    img.src = url; 
-    if (img.complete) { // 如果图片已经存在于浏览器缓存，直接调用回调函数 
-        callback.call(img); 
-        return; // 直接返回，不用再处理onload事件 
-    } 
-    img.onload = function () { //图片下载完毕时异步调用callback函数。 
-        callback.call(img);//将回调函数的this替换为Image对象 
-    };
-}
-
 // 加载所有图片
 function loadAllImage(imgList) {
     var defList = [];
@@ -132,7 +117,7 @@ function hideLoading() {
 function init() {
 	winSize.height = $(window).height();
 	winSize.width = $(window).width();
-	console.log(winSize);
+	// console.log(winSize);
 
 	// 初始化各个元素的宽度和高度
 	cloudCtW = winSize.width * .6;
@@ -198,7 +183,7 @@ function init() {
 	bindNutEvent();
 }
 
-
+// 咳咳炸裂
 function brokeNut() {
 	var def = $.Deferred();
 	def.resolve(); // 暂时
@@ -235,7 +220,7 @@ function endGame() {
 		}, 1000);
 	}, 1000);
 }
-// 云飞进来
+// 1 云飞进来
 function cloudIn() {
 	var def = $.Deferred();
 	var endLeft = winSize.width / 2 - cloudCtW / 2;
@@ -250,17 +235,7 @@ function cloudIn() {
 	return def.promise();
 }
 
-// 开始谢雪
-function fallSnow() {
-	var steps= 29;
-	var duration = 1;
-	var backW = cloudW * steps;
-	$cloud.fadeIn(500);
-	snowAnim = frameAnimation.anims($cloud, backW, steps, duration, 0);
-	snowAnim.start();
-}
-
-// 冰棒结冰
+// 2 冰棒结冰
 function iceBecome() {
 	var def = $.Deferred();
 	var steps = 40;
@@ -280,6 +255,17 @@ function iceBecome() {
 	return def.promise();
 }
 
+// 2.1 开始谢雪
+function fallSnow() {
+    var steps= 29;
+    var duration = 1;
+    var backW = cloudW * steps;
+    $cloud.fadeIn(500);
+    snowAnim = frameAnimation.anims($cloud, backW, steps, duration, 0);
+    snowAnim.start();
+}
+
+// 2.2 背景结冰
 function backFadeIn() {
 	var backDuration = (iceDuration + nutIceDuration);
 	
@@ -292,7 +278,7 @@ function backFadeIn() {
 	}, iceDuration * .8 * 1000)
 }
 
-// 冰冰和豆豆结合
+// 3 冰冰和豆豆结合
 function iceFadeout() {
 	var def = $.Deferred();
 	var steps = 6;
@@ -308,7 +294,7 @@ function iceFadeout() {
 	nutIceAnim.start();
 	return def.promise();
 }
-// 云飞走
+// 3.1 云飞走
 function cloudOut() {
 	var def = $.Deferred();
 	var endLeft = winSize.width;
@@ -318,13 +304,12 @@ function cloudOut() {
 		'top': -cloudH + 'px'
 	}, 500, 'linear', function() {
 		def.resolve();
-		// stopFallSnow();
+		stopFallSnow();
 	})
 	return def.promise();
 }
-// 停止下雪
+// 3.1.1停止下雪
 function stopFallSnow() {
-
 	snowAnim.stop();
 }
 
@@ -387,7 +372,7 @@ function openCase() {
 	shakeCaseAnim.stop();
 	$caseShake.hide();
 	$caseOpen.show();
-	console.log('openCase:', width, backW, steps);
+	// console.log('openCase:', width, backW, steps);
 	openCaseAnim = frameAnimation.anims($caseOpen, backW, steps, duration, 1);
 	openCaseAnim.start();
 }
@@ -396,7 +381,7 @@ function openCase() {
 
 
 // 开始-----------------------
-var imgList = [
+imgList = [
 	'/threejs/static/img/canvas_ice_broke2.png',
     '/threejs/static/img/canvas_snow_back1_1.png',
     '/threejs/static/img/canvas_snow_back1_2.png',
