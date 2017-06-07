@@ -12,7 +12,7 @@ ThreeJS For Fun
 * [使用 header-tracker 和 webRTC](http://learningthreejs.com/blog/2013/03/12/move-a-cube-with-your-head/)
 * [Three.js 中文文档](http://techbrood.com/threejs/docs/)
 * [Intro to WebGL with Three.js](http://davidscottlyons.com/threejs/presentations/frontporch14/#slide-0)
-
+* [Google+ 关于 threejs 的文章发布](https://plus.google.com/+ThreejsOrg)
 
 ## ThreeJS 相关的库
 * [tween lite](https://greensock.com/)
