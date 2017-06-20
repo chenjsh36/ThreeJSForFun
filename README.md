@@ -21,6 +21,7 @@ ThreeJS For Fun
 * [headtraker](https://github.com/auduno/headtrackr)
 * [html_gl](https://github.com/PixelsCommander/HTML-GL)
 * [threex](http://www.threejsgames.com/extensions/)
+* [ar.js](https://github.com/then/promise)
 
 ## 开发工具
 * [threejs inspector chrome](http://learningthreejs.com/blog/2015/08/13/three-dot-js-inspector-in-chrome-devtools-v1-dot-2-5-released/)
