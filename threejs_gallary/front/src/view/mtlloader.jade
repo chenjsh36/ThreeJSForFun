@@ -1,0 +1,118 @@
+extends threejslayout
+
+block content
+    script(src="/threejs/static/lib/threejs/OrbitControls.js")
+    script(src="/threejs/static/lib/threejs/DDSLoader.js")
+    script(src="/threejs/static/lib/threejs/MTLLoader.js")
+    script(src="/threejs/static/lib/threejs/OBJLoader.js")
+    script.
+        var scene,
+            camera,
+            renderer,
+            stats,
+            gui
+            ;
+        var geometry,
+            material,
+            cube,
+            line;
+        
+        var ambientLight;
+
+        init();
+        animate();
+
+        function init() {
+            var size = 500,
+                step = 50,
+                geometry,
+                i, j
+                ;
+            
+            //- Stats 
+            stats = new Stats();
+            document.body.appendChild(stats.dom);
+
+            //- 创建场景
+            scene = new THREE.Scene();
+        
+            //- 创建相机
+            camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 10000 );
+            camera.position.z = 500;
+            camera.position.y = 500;
+            camera.position.x = 100;
+            camera.lookAt(scene.position);
+
+            //- 渲染
+            renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor( 0xffffff );
+            renderer.setPixelRatio( window.devicePixelRatio );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+
+            //- 平面坐標系
+            var CoSystem = new THREEex.CoSystem(500, 50, 0x000000);
+            line = CoSystem.create();
+            //- scene.add(line);
+
+            //- 立方体
+            geometry = new THREE.BoxGeometry( 100, 100, 100 );
+            material = new THREE.MeshLambertMaterial( { color: 0xff7700} );
+            cube = new THREE.Mesh( geometry, material );
+            //- scene.add( cube );
+
+            // model
+            var onProgress = function ( xhr ) {
+                if ( xhr.lengthComputable ) {
+                    var percentComplete = xhr.loaded / xhr.total * 100;
+                    console.log( Math.round(percentComplete, 2) + '% downloaded' );
+                }
+            };
+            var onError = function ( xhr ) { };
+            THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
+            var mtlLoader = new THREE.MTLLoader();
+            //- mtlLoader.setPath( 'obj/male02/' );
+            mtlLoader.load( '/threejs/static/file/chuanObj/chuan.mtl', function( materials ) {
+                materials.preload();
+                var objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials( materials );
+                objLoader.setPath( '/threejs/static/file/chuanObj/' );
+                objLoader.load( 'chuan.obj', function ( object ) {
+                    object.position.y = - 95;
+                    scene.add( object );
+                }, onProgress, onError );
+            });
+
+
+
+            //- 环境灯
+            ambientLight = new THREE.AmbientLight(0xffffff);
+            scene.add(ambientLight);
+
+            //- 点灯
+            //- var light = new THREE.PointLight(0xFFFF00);
+            //- light.position.set(500, 500, 500);
+            //- scene.add(light);
+
+            //- 绑定窗口大小，自适应
+            var threeexResize = new THREEex.WindowResize(renderer, camera);
+
+            //- threejs 的控制器
+            var controls = new THREE.OrbitControls( camera, renderer.domElement );
+            controls.target = new THREE.Vector3(0,15,0);
+            controls.maxPolarAngle = Math.PI / 2;
+            //- controls.addEventListener( 'change', function() { renderer.render(scene, camera); } ); // add this only if there is no animation loop (requestAnimationFrame)
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            camera.lookAt(scene.position);
+            stats.begin();
+            render();
+            stats.end();
+        }
+
+        //- 循环体-渲染
+        function render() {
+            renderer.render( scene, camera );
+        }
